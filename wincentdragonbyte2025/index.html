@@ -1,0 +1,103 @@
+<html>
+	<head>
+		<title>Nils Blomqvist's web page</title>
+		<link rel="stylesheet" href="../style.css?v=202508011113">
+	</head>
+	<body>
+		<h1>Introduction</h1>
+
+		<p>In 2025 I participated in the Wincent Dragonbyte Coding Challenge. I completed problems N1 through N3. Below is a summary of the problem statements and solutions.</p>
+
+		<h1>N1</h1>
+		<h2>Statement</h2>
+
+		<p>All numbers in this task are non-negative integers.</p>
+
+		<p>When refering to their digits, we are using their standard base-10 representations.</p>
+
+		<p>Given is a number <i>d</i></p>
+		<ul>
+			<li>Find any two numbers with a difference <i>d</i> and the same digit sum, or report that no such pair of numbers exists.</li>
+		</ul>
+
+		<h2>Input format</h2>
+
+		<p>The first line of the input file contains the number <i>t</i> of test cases. The specified number of test cases follows, one after another.</p>
+
+		<p>Each test case consists of a single line containing a single number <i>d</i>.</p>
+
+		<h2>Output format</h2>
+
+		<p>For each test case output a single line containing either a pair of space-separated numbers <i>x</i> and <i>y</i> with the desired properties, or the word “NONE” (quotes for clarity) if there is no solution.</p>
+
+		<p>The numbers in your output may have up to 50 digits. (It is guaranteed that if a solution exists, there is one that fits into this limit comfortably.)</p>
+
+		<h2>Subproblem N1 (16 points, public)</h2>
+
+		<p>Input file: <a href="N1.in">N1.in</a></p>
+		<p>My output file: <a href="N1.out">N1.out</a></p>
+		<p>My solution: <a href="N1.py">N1.py</a></p>
+
+		<p>Constraints:</p>
+
+		<ul>
+			<li>t <= 200</li>
+			<li>in each test case, 1 <= d <= 1000</li>
+			<li>there is no test case with the answer “NONE”</li>
+		</ul>
+		
+		<h1>Subproblem N2 (32 points, public)</h1>
+
+		<p>Input file: <a href="N2.in">N2.in</a></p>
+		<p>My output file: <a href="N2.out">N2.out</a></p>
+		<p>My solution: <a href="N2.py">N2.py</a></p>
+
+		<p>Constraints:</p>
+
+		<ul>
+			<li>t <= 200</li>
+			<li>in each test case, 1 <= d <= 10^6</li>
+		</ul>
+		
+		<h2>Subproblem N3 (52 points, secret)</h2>
+		
+		<p>Input file: <a href="N3.in">N3.in</a></p>
+		<p>My output file: <a href="N3.out">N3.out</a></p>
+		<p>My solution: <a href="N3.py">N3.py</a></p>
+
+		<p>Constraints:</p>
+
+		<ul>
+			<li>t <= 200</li>
+			<li>in each test case, 0 <= d <= 10^18</li>
+		</ul>
+
+		<h2>Example</h2>
+
+		<table cellpadding=0 cellspacing=0>
+			<tr>
+				<th>input</th>
+				<th>output</th>
+			</tr>
+			<tr>
+				<td>3</td>
+				<td>60 15</td>
+			</tr>
+			<tr>
+				<td>45</td>
+				<td>NONE</td>
+			</tr>
+			<tr>
+				<td>47</td>
+				<td>684528 741696</td>
+			</tr>
+			<tr>
+				<td>57168</td>
+				<td></td>
+			</tr>
+		</table>
+
+		<p>Note that if a solution exists, the two numbers with a difference and the same digit sum can be printed in either order.</p>
+
+	</body>
+</html>
