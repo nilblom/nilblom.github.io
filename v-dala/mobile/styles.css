@@ -51,6 +51,11 @@ div {
   margin: 20px 0;
 }
 
+.content-box .title {
+	font-size: 35px;
+	margin-bottom: 15px;
+}
+
 .logo-link {
 	margin: 50px 50px 0;
   display: inline-block;
@@ -91,6 +96,35 @@ div {
 	display: block;
 	text-transform: uppercase;
 	user-select: none;
+}
+
+.link a {
+	text-decoration: none;
+	color: black;
+}
+
+.contact {
+	font-size: 20px;
+	margin: 30px;
+	text-align: center;
+}
+
+.contact-image-placeholder {
+	width: 150px;
+	height: 150px;
+	background: grey;
+}
+
+.contact-title {
+	margin: 10px;
+}
+
+.contact-name {
+	margin: 10px;
+}
+
+.contact-email {
+	margin: 10px;
 }
 
 .divider {
