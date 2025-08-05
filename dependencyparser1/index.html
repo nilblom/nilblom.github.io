@@ -1,0 +1,144 @@
+<html>
+	<head>
+		<title>Nils Blomqvist's web page</title>
+		<link rel="stylesheet" href="../style.css?v=202508011113">
+	</head>
+	<body>
+		<h1><a href="../">&lt; home</a> Nils Blomqvist's web page</h1>
+		<h2>A small dependency parser</h2>
+
+		<p>This page presents a small dependency parser intended to be used for educational purposes. Copyright © 2025 Nils Blomqvist.</p>
+
+		<ul>
+			<li>The parser is built using a simple state machine that moves a pointer along the sentence and starts and ends arcs.</li>
+
+			<li>The parser can currently learn the correct arcs using existing CoNLL-U data and replay the actions created during learning to recreate the arcs.</li>
+
+			<li>The plan is to implement a learning element into the code so that the parser can parse trees without having to give it the parser.</li>
+
+			<li>The motivation behind such a simple parser is that the main of the computing is not done within the parsing algorithm itself, but (in comparison) rather within the learning elements (ML). Gains in performance should be made there.</li>
+
+		</ul>
+
+		<p>The code as of 2025/08/05:</p>
+
+		<pre>
+import numpy as np
+import pyconll
+
+# Classes
+MOVE_RIGHT = 0
+START_ARC = 1
+END_ARC = 2
+
+
+class DependencyParser1:
+
+    """
+    self.token_index must be manually increased along with the sentence,
+    as each token has been processed. Do it as soon as self.start_arc()
+    has been called. self.move_right() only moves the move pointer to the
+    next token, while self.token_index keeps track of the token that is
+    to be assigned a head.
+
+    Each arc is a tuple [x, y] where x is the start, and y is the head.
+    """
+    def __init__(self):
+        self.move_index = 0
+        self.token_index = -1
+        self.arcs = []
+        self.arc = [0, 0]
+
+    def move_right(self):
+        self.move_index += 1
+
+    def start_arc(self):
+        self.arc[0] = self.token_index + 1
+
+    def end_arc(self):
+        self.arc[1] = 0 if self.move_index == 0 else self.move_index + 1
+        self.arcs.append(self.arc)
+        self.arc = [0, 0]
+        self.move_index = 0
+
+    def reset(self):
+        self.arcs = []
+        self.arc = [0, 0]
+        self.token_index = - 1
+        self.move_index = 0
+
+
+class ParserRunner:
+
+    def __init__(self, parser):
+        self.parser = parser
+
+    def cheat(self, sentence, actions):
+        actions_copy = actions.copy()
+        arc_start_index = 0
+
+        sentence_length = len(sentence)
+
+        while actions_copy:
+            action = actions_copy.pop(0)
+            if action == START_ARC:
+                self.parser.token_index += 1
+                self.parser.start_arc()
+            elif action == MOVE_RIGHT:
+                self.parser.move_right()
+            elif action == END_ARC:
+                self.parser.end_arc()
+
+        return self.parser.arcs
+
+
+class Trainer:
+
+    def __init__(self, parser):
+        self.parser = parser
+        self.features = []
+        self.classes = []
+
+    def train(self, sentence):
+        arc_start_index = 0   # 0 is the first token. The root
+                              # is numbered 0, the rest of the
+                              # tokens are numbered as the index
+                              # plus 1.
+
+        sentence_length = len(sentence)
+
+        while arc_start_index < sentence_length:
+            self.parser.token_index += 1
+            self.parser.start_arc()
+            self.classes.append(START_ARC)
+
+            arc_end_index = 0
+            head = int(sentence[arc_start_index].head) - 1
+
+            while arc_end_index < head:
+                arc_end_index += 1
+                self.parser.move_right()
+                self.classes.append(MOVE_RIGHT)
+
+            self.parser.end_arc()
+            self.classes.append(END_ARC)
+            arc_start_index += 1
+
+
+if __name__ == '__main__':
+    conll = pyconll.load_from_file("sv_talbanken-ud-train_sample.conllu")
+    parser = DependencyParser1()
+    trainer = Trainer(parser)
+    for sentence in conll[:1]:
+        # First sentence should be: [[1, 2], [2, 0], [3, 4], [4, 2]]
+        trainer.train(sentence)
+        print(parser.arcs)
+        parser.reset()
+
+    parser_runner = ParserRunner(parser)
+    for sentence in conll[:1]:
+        arcs = parser_runner.cheat(sentence, trainer.classes)
+        print(arcs)
+		</pre>
+	</body>
+</html>
