@@ -6,15 +6,52 @@
 	<body>
 		<h1><a href="../">< home</a> Introduction</h1>
 
+		<!-- TODO
+		Write Table of Contents
+		Number tables and figures
+		Read through and comment
+		Ask Görkem if he can write the same in Prolog
+		-->
+
+		<p>Timeline:</p>
+		<ul>
+			<li>2026-02-09: First published.</li>
+		</ul>
+
 		<p>I started to build a program that can solve games of 'Crack the Code' mid November 2025. By late January 2026 the theory and the program both seem to work.</p>
 
+		<p>Table of Contents</p>
+		<ol>
+			<li>Introduction</li>
+            <li>What is 'Crack the Code'?</li>
+            <li>Rules</li>
+            <li>Game dictionary</li>
+            <li>Example game</li>
+            	<ol>
+		            <li>Tip 1/4: x=2 y=1 314</li>
+		            <li>Tip 2/4: x=0 y=0 560</li>
+		            <ol>
+            			<h3>Motivating the use of negative hypotheses</h3>
+            		</ol>
+            	</ol>
+            <h2>Tip 3/4: x=1 y=0 214</h2>
+            <h2>Tip 4/4: x=2 y=1 387</h2>
+            <h2>Combining hypotheses</h2>
+            <li>Programming a solution finder</li>
+            <h2>Creating data structures</h2>
+            <h2>Programming routines for Crack the Code</h2>
+            <li>A pseudo-code description of the game</li>
+            <h2>Generating tips</h2>
+            <li>Do you have questions about this writeup?</li>
+        </ol>
+
 		<center><img src="padlock.png" width="200px"/></center>
-		<h2>What is 'Crack the Code'?</h2>
+		<h1>What is 'Crack the Code'?</h1>
 
 		<p>'Crack the Code' is a game where a secret code is cracked with the help of tips that show how
 		parts of the code is formed.</p>
 		
-		<h2>Rules</h2>
+		<h1>Rules</h1>
 		<ul>
 			<li>The game starts by player one coming up with a secret code (three unique numbers). The same player then writes a series of tips (typically 4).</li>
 			<li>The code is a three-digit number (variants of the game where there are less or more than this exist).</li>
@@ -23,7 +60,7 @@
 			<li>Each tip typically indicate a part of the code. There are three components to a tip: 1) the digits (as many as there are in the secret code) 2) a number that indicate how many of the digits are also in the secret code 3) a number that indicate how many of the digits are correctly placed relative to the secret code.</li>
 		</ul>
 
-		<h2>Game dictionary</h2>
+		<h1>Game dictionary</h1>
 		<ul>
 			<li>secret code: A three-digit (all unique) number that is only known to one of the players.</li>
 			<li>digit: One of the elements in a code. For example, 1 in [1, 2, 3] is a digit.</li>
@@ -38,7 +75,7 @@
 			<li>grand hypothesis: A set of hypotheses that may be a solution.</li>
 		</ul>
 
-		<h2>Example game</h2>
+		<h1>Example game</h1>
 
 		<p>The secret code is 348. The list of tips (x, y, digits) are:</p>
 		<ul>
@@ -49,7 +86,7 @@
 		</ul>
 		<p>From the tips above, it is possible to reach the conclusion that 348 is the secret code. I will present details about each tip below. One way to solve the game methodically is to create hypotheses about what the code can look like and then combine them together. I will use a method that does this, which is also one I came up with. (This is also the method that I have implemented in a Python program that is available for download on this page.) I have marked in black the hypotheses (partial solutions) that solve this particular example game.</p>
 
-		<h3>Tip 1/4: x=2 y=1 314</h3>
+		<h2>Tip 1/4: x=2 y=1 314</h2>
 
 		<p>From x and y one can tell that of 3, 1, and 4 only two are in the secret code, and that one of them is in the correct position. It is not possible to know which the digits are, but by creating hypotheses it is possible to solve the game.</p>
 
@@ -80,9 +117,14 @@
 		</tr>
 		</table>
 
-		<h3>Tip 2/4: x=0 y=0 560</h3>
+		<h2>Tip 2/4: x=0 y=0 560</h2>
 
-		<p>A tip where x=0, y=0 can be interpreted as an empty positive hypothesis. Any digit may occur except for the ones in the tip code. To express that, negative hypotheses are created. It is enough to create hypotheses such that each digit has occupied every slot in total (you can do this by rotating the number three times). Why is it enough? The x=0 y=0 type tips express that each number in the tip code may not occur in any position in the code. If one creates negative hypotheses where each digit has (in total) occupied every position, the same idea has been expressed. It is also timely to mention that the function to determine if two hypotheses are compatible will evaluate each digit in turn and make sure that (for example) 5 does not occur anywhere in the other hypotheses (the one being compared to).</p>
+		<p>A tip where x=0, y=0 can be interpreted as an empty positive hypothesis. Any digit may occur except for the ones in the tip code. To express that, negative hypotheses are created. It is enough to create hypotheses such that each digit has occupied every slot in total (you can do this by rotating the number three times). Why is it enough? The x=0 y=0 type tips express that each number in the tip code may not occur in any position in the code. If one creates negative hypotheses where each digit has (in total) occupied every position, the same idea has been expressed.</p>
+
+		<h3>Motivating the use of negative hypotheses</h3>
+
+		<p>In an example where two of the tips are 1 1 123 and 2 2 423, the use of negative hypotheses have the effect of discarding incompatible hypotheses. Consider the hypothesis 1__ (from the first tip). It would be considered compatible with _23 (from the second tip) if the negative hypotheses _23 is not taken into account. If _23 would be the right choice, the first tip should say 3 3 123, since also 2 and 3 are in the correct positions. Therefore negative hypotheses are necessary.</p>
+
 
 		<table border=1px style="caption-side:bottom;font-family: monospace;">
 		<caption>Hypotheses for 560, x=0, y=0.</caption>
@@ -91,7 +133,7 @@
 		</tr>
 		</table>
 
-		<h3>Tip 3/4: x=1 y=0 214</h3>
+		<h2>Tip 3/4: x=1 y=0 214</h2>
 
 		<p>In this tip, only one digit in the tip code is in the secret code. And it is not in the correct position. I have started by assuming that 2 is that number (in the first row), then 1 (in the second row), and then 4 (in the third row). In each hypothesis, the number takes a place that is not the place of the number in the tip code.</p>
 
@@ -111,7 +153,7 @@
 		
 		</table>
 
-		<h3>Tip 4/4: x=2 y=1 387</h3>
+		<h2>Tip 4/4: x=2 y=1 387</h2>
 
 		<p>The reasoning to create hypotheses for this tip is the same as for the previous tips.</p>
 
@@ -142,63 +184,185 @@
 		</tr>
 		</table>
 
-		<h3>Combining hypotheses</h3>
+		<h2>Combining hypotheses</h2>
 
 		Like you saw in the previous sections, hypotheses have been noted for each of the four tips. They can now be combined in different ways to form grand hypotheses. One (or sometimes several) of them are solutions while others are not.
 
-		Only hypotheses that are compatible with each other can be combined to form a grand hypotheses. Compatability can be defined as a function that takes two hypotheses and makes a series of comparisons between the two. The song goes like this: if two hypotheses are equal or if both are negative hypotheses, they are not in conflict with each other, so they are compatible. If that condition is not met, then if the hypotheses are both positive, and for each of the digits, one check whether they fit. A fit between the two is defined as one of the two conditions being fulfilled: 1) the digits are equal 2) one or the other of the digits is blanked. Only if all of the digits fit are the two hypotheses compatible. Further, if one of the hypotheses is negative and the two digits are equal, they are not compatible.
+		Only hypotheses that are compatible with each other can be combined to form a grand hypotheses. Compatability can be defined as a function that takes two or more hypotheses and makes a series of comparisons between the two. It works like this: pick a digit from one of the positive hypotheses. It should be in the first position. For all other positive hypotheses, it should be the case that the same position is equal to that digit or is blanked. For all negative hypotheses it should be the case that the position is blanked or is not held by the same digit.
 
-		Once you have understood the concept of compatible hypotheses, it is relatively easy to pick out compatible ones that form a solution from the tables above, simply with your eye.
+		Once you have understood the concept of compatible hypotheses, it is relatively easy to pick out compatible ones that form a solution from the tables above simply with your eye.
 
-		<h2>Programming a solution finder</h2>
+		<h1>Programming a solution finder</h1>
 
 		<p>The method used so far is enough of a method that it can be programmed into a computer program.</p>
 
-		<p>One thing that was not addressed in the previous sections is how to in practice combine the hypotheses and decide if they are all compatible with each other (the goal here is to find out if they can form a solution). To programmatically find the solutions from the lists of hypotheses, we can create the cartesian product of the four tables. It involves finding every combination of one hypotheses from each table. Then it is a matter of, for each two hypotheses in each grand hypothesis, compute if they are compatible or not. If all hypotheses are compatible with each other, a grand hypothesis is also a solution.</p>
+		<p>One thing that was not addressed in the previous sections is how to in practice combine the hypotheses and decide if they are all compatible with each other (the goal here is to find out if they can form a solution). To programmatically find the solutions from the lists of hypotheses, we can create the cartesian product of the four tables. It involves finding every combination of one hypotheses from each table. Then it is a matter of computing if they are compatible or not. If all hypotheses are compatible with each other, a grand hypothesis is also a solution.</p>
 
 		<p>There is also the possibility to, at each step of combining a hypotheses with one from the next table, checking for compatibility. That way the computer never creates grand hypotheses that are not solutions, thus saving power. Because the items that need to be combined are relatively few, there is less gain to be had compared to if the items were in the thousands, ten-thousands or hundreds of thousands. Therefore this exercise is left out to the reader. If you want to, you can send your own solution to me for correction.</p>
 
 		<p>Let's move on to how to complete the program. To start with, in order to write a program that can solve Crack the Code, the input to the program (the tips) must be coded for the computer. I decided to use the Python programming language because of its simplicity. The following sections are easier to follow if you have already learned Python.</p>
 
-		<h3>Creating data structures</h3>
+		<h2>Creating data structures</h2>
 
-		<p>A tip can easily be coded using a tuple. The properties <i>x</i> and <i>y</i> can occupy the first two positions. The tip code can occupy the third position. It is easy to reference to each digit in the code if it is split into digits and put in a list.</p>
+		<p>A tip can easily be coded using a tuple. The properties <i>x</i> and <i>y</i> can occupy the first two positions. The tip code can occupy the third position. It is easy to reference to each digit in the code if it is split into digits and put in a list. The result looks like [1, 0, [3, 1, 4]].</p>
 
-		<table border="1px"><title>Coding tips</title>
-			<tr>
-				<th colspan=3>Tip</th><th>Coded tip</th>
-			</tr>
-			<tr>
-				<td>x</td><td>Number of digits present</td><td>2</td><td rowspan=3>[2, 1, [1, 2, 3]]</td>
-			</tr>
-			<tr>
-				<td>y</td><td>Number of digits placed correctly</td><td>1</td>
-			</tr>
-			<tr>
-				<td>[a, b, c]</td><td>The digits in the tip</td><td>[1, 2, 3]</td>
-			</tr>
-		</table>
-		<p>Hypotheses contain both positive and negative hypothesis. Their structure is similar to the secret code and tip code, but they may contain blanks as in [1, "_", 3]. To distinguish positive and negative hypothesis, I put a zero (negative hypothesis) or one (positive hypothesis) in front of the digits.</p>
-		<table border="1px"><title>Positive and negative hypotheses</title>
-			<tr>
-				<th colspan=2>Hypotheses</th><th>Coded hypothesis</th>
-			</tr>
-			<tr>
-				<td>1</td><td>Positive hypothesis</td><td>[1, [1, 2, 3]]</td>
-			</tr>
-			<tr>
-				<td>0</td><td>Negative hypothesis</td><td>[0, [1, 2, 3]]</td>
-			</tr>
-			
-		</table>
+		<p>Hypotheses may contain both positive and negative hypothesis. Their structure is similar to the secret code and tip code, but they may contain blanks as in [1, "_", 3]. To distinguish positive and negative hypothesis, I put a zero (negative hypothesis) or one (positive hypothesis) in front of the digits. The positive hypotheses looks like [1, [3, 4, "_"]], and a negative hypotheses looks like [0, ["_", "_", 1]].</p>
 
-		<h2>A pseudo-code description of the game</h2>
-		<p>For each tip, create a list of the permutations of the tip code.</p>
-		<p>If x is 0, create an empty positive hypothesis [[1, ["_", "_", "_"]]]. Create negative hypotheses from the tip code. Append each one to the end of the list with the positive hypothesis. Return/stop.</p>
-		<p>If x > 0, for each permutation, create combinations of size x. For example, from a tip code [1, 2, 3] and x being 2, the combinations are (1, 2), (1, 3), (2, 3).</p>
-		<p>For each such combination, iterate over the indices of the tip code. For each iteration, see if the current digit is in the combination. If it is, only increment the counter that keeps track of how many digits are in the correct slot relative to the tip code. If the digit is not in the combination, blank it with a "_". At this stage, a positive hypothesis has been produced and together with it maybe a negative hypothesis.</p>
+		<h2>Programming routines for Crack the Code</h2>
 
-		<ul>
+		<p>The main routine is simple: first hypotheses are created from the tips, and then they are combined. At the end it is made sure that only unique solutions are returned by the function.</p>
+
+		<figure>
+		<pre>
+def crackthecode(tips):
+	hypotheses = []
+	for tip in tips:
+		hypotheses.append(list(infer3(tip[0], tip[1], tip[2])))
+	
+	solutions = combine(hypotheses)
+	unique_solutions = []
+	
+	for s in solutions:
+		t = simple_form(s)
+		if not solution_is_complete(t):
+			continue
+		if not find_solution(t, unique_solutions):
+			unique_solutions.append(t)
+
+	return unique_solutions			
+		</pre>
+		<caption>The main function of the program.</caption>
+		</figure>
+
+		<p>Here is how hypotheses are combined into grand hypotheses. It is possible to use a custom implementation of itertools.product() to remove partial solutions that don't fit early on instead of continue adding hypotheses to form a grand hypothesis. As I mentioned, implementing that option is a great exercise, and if you want you can send it to me for correction at <a href="mailto:nblomqvist834@gmail.com">nblomqvist834@gmail.com</a>.</p>
+
+		<figure>
+		<pre>
+def combine(H):
+	combinations = product(*H)
+	for c in combinations:
+		d = list(c)
+		if solution_fits(d):
+			yield d
+		</pre>
+		<caption>The function that combines hypotheses.</caption>
+		</figure>
+
+		<p>The function that check for compatibility of hypotheses is shown below. It uses the fact that you can line up all the hypotheses, positive and negative, and for each position of the digits, pick the first occurring digit. All hypotheses must then either have a "_" or the same digit that was found earlier in that position in order for it to be a solution. The same method is applied to all of the positions that a digit in the code can have (1, 2, 3).</p>
+
+		<figure>
+		<pre>
+def solution_fits(solution):
+	for i in range(3):
+		a = None
+
+		def find_digit():
+			for h in solution:
+				for x in h:
+					if x[0] == 1 and x[1][i] != "_":
+						return x[1][i]
+
+		a = find_digit()
+		for h in solution:
+			for x in h:
+				if x[0] == 1:
+					if x[1][i] != a and x[1][i] != "_":
+						return False
+				elif x[0] == 0:
+					if x[1][i] == a and x[1][i] != "_":
+						return False
+	return True		
+		</pre>
+		<caption>Functions to check for compatibility of hypotheses.</caption>
+		</figure>
+
+		<p>The function that creates hypotheses from the tips require some explanation. If x=0 then only negative hypotheses need to be created (with the obligatory empty positive hypotheses). The function <i>negative_hypotheses()</i> can be seen below <i>infer()</i>.</p>
+
+		<p>For each permutation of the tip code (there are 3!=6 of them if the digits are unique), combinations of size x ([3, 1], [3, 4], [1, 4] for [3, 1, 4] and x=2) are created from the tip code. The digit that is not in the combination is blanked with an underscore. At the same time the excluded digit is added to the negative hypotheses. Once each digit in the permutation has been examined, the altered permutation is tested for the requirement that y makes. If it does not pass (y should be equal to the number of correctly placed digits) the permutation is discarded.</p>
+
+		<p>At the end of the for-loop, the hypothesis is added, with its negative hypothesis and if one exists, the mirrored negative hypothesis. The mirrored negative hypothesis exists to express that the numbers in the negative hypothesis cannot occur in either combination. For example the negative hypothesis _30 has a mirror _03. A mirrored negative hypothesis is only created when x=1, so that two digits are excluded in the negative hypothesis.</p>
+
+		<figure>
+		<pre>
+def infer(x, y, a):
+	if x < y:
+		raise Exception("x must be equal to or greater than y")
+
+	if x == 0:
+		H = [ [[1, ["_", "_", "_"]]] ]
+		n = list(negative_hypotheses(a))
+		for h in n:
+			H[0].append([0, h])
+		return H
+
+	P = list(permutations(a))
+	results = []
+	seen_positive_hypotheses = []
+	for permutation in P:
+		b = list(permutation)
+		C = list(combinations(b, x))
+
+		for combination in C:
+			combination = list(combination)
+			c = copy.copy(b)
+			correctly_placed = 0
+			exclude = [0, ["_", "_", "_"]]
+
+			for number in range(3):
+				if c[number] in combination and c[number] == a[number]:
+					correctly_placed += 1
+
+				if c[number] not in combination:
+					exclude[1][number] = c[number]
+					c[number] = "_"
+
+			if correctly_placed	!= y:
+				continue
+
+			if c in seen_positive_hypotheses:
+				continue
+
+			seen_positive_hypotheses.append(c)
+
+			c = [1, c]
+
+			if mirror_numbers(exclude[1]):
+				results.append((c, exclude, [0, mirror_numbers(exclude[1])]))
+			else:
+				results.append((c, exclude))
+
+	return results
+		</pre>
+		<caption>The function that creates hypotheses from one of the code tips.</caption>
+		</figure>
+
+		<figure>
+		<pre>
+def negative_hypotheses(a):
+	q = deque(a)
+	for i in range(3):
+		q.rotate(1)
+		yield list(q)
+
+def mirror_numbers(a):
+	numbers = []
+	b = copy.copy(a)
+	for i in range(3):
+		if a[i] != "_":
+			numbers.append(a[i])
+	for i in range(3):
+		if a[i] != "_":
+			b[i] = numbers.pop(-1)
+		else:
+			b[i] = "_"
+	if b == a:
+		return None
+	return b	
+		</pre>
+		<caption>Functions for creating the codes in a negative hypotheses and mirroring the numbers of a negative hypotheses.</caption>
+		</figure>
+
+		<h1>A pseudo-code description of the game</h1>
 
 		<li>Negative hypotheses (presented above) that indicate which digits may not occur are also made. This is especially true when the tip has the form (0, 0, 123) which indicate the numbers that do not occur in the secret code. (0, 0, ...) tips are very useful since they show the digits that are not present in the secret code. The other type of negative hypotheses result from creating positive hypotheses: (1, 1, 123) indicate that one of the digits is in the secret code, and that just that digit is also in the correct position. It means that if one hypothesis is 1__, the digits two and three may not occur in the empty positions (and in any order). If it did, x and y both would be different. The example (1, 1, 123) produces the negative hypotheses _23 and _32. If the numbers could be in the positive hypothesis, the tip would look like (3, 1, 123). Such a tip generates hypotheses like 132.</li>
 
@@ -209,11 +373,49 @@
 			<li>Several solutions can exist. To win the game, one or more solutions must be provided. The solution is a code with as many numbers as is in the secret code.</li>
 		</ul>
 
-		<h2>Motivating the use of negative hypotheses</h2>
 
-		<p>In an example where two of the tips are 1 1 123 and 2 2 423, the use of negative hypotheses have the effect of discarding incompatible hypotheses. Consider the hypothesis 1__ (from the first tip). It would be considered compatible with _23 (from the second tip) if the negative hypotheses _23 is not taken into account. If _23 would be the right choice, the first tip should say 3 3 123, since also 2 and 3 are in the correct positions.</p>
+		<h2>Generating tips</h2>
 
-		<h2>Do you have questions about this writeup?</h2>
+		<p>The program would not be complete without a routine to create a new set of tips that, of course, the program can solve. The code below creates a set of tips for a given code (in other words, you come up with the code and the tips are created for you).</p>
+
+		<figure>
+		<pre>
+def generate_tips(code):
+
+	def infer_x(code, a):
+		x = 0
+		for number in a:
+			if number in code:
+				x += 1
+		return x
+
+	def infer_y(code, a):
+		y = 0
+		for i in range(3):
+			if code[i] == a[i]:
+				y += 1
+		return y
+
+	tips = []
+	while len(tips) < 4:
+		pool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+		numbers = [pool.pop(random.randint(0, len(pool)-1)),
+			pool.pop(random.randint(0, len(pool)-1)),
+			pool.pop(random.randint(0, len(pool)-1))]
+		
+		x = infer_x(code, numbers)
+		y = infer_y(code, numbers)
+
+		tips.append((x, y, numbers))
+
+	return tips
+	</pre>
+	<caption>A Python routine to generate four tips; you give it the secret code that you want.</caption>
+	</figure>
+
+
+		<h1>Do you have questions about this writeup?</h1>
 
 		<p>Please send your questions to <a href="mailto:nblomqvist834@gmail.com">nblomqvist834@gmail.com</a>.</p>
 
