@@ -302,7 +302,7 @@ def solution_is_complete(simple_form):
 		<caption>The main function of the program and the function that simplifies a grand hypothesis.</caption>
 		</figure>
 
-		<p>Below is how hypotheses are combined into grand hypotheses. <i>itertools.product()</i> from the Python standard library is used, with a call to check if the solution is compatible before yielding the result. It is possible to use a custom implementation of itertools.product() or use the function in more creative ways to remove partial solutions that don't fit early on instead of continue adding hypotheses to form a grand hypothesis. It should be possible to save more than half of the comparisons, since more than half of the products are solutions. As I mentioned, implementing that option is a fun exercise.</p>
+		<p>Below is how hypotheses are combined into grand hypotheses. <i>itertools.product()</i> from the Python standard library is used, with a call to check if the solution is compatible before yielding the result. It is possible to use a custom implementation of itertools.product() or use the function in more creative ways to remove partial solutions that don't fit early on instead of continue adding hypotheses to form a grand hypothesis. It should be possible to save on the comparisons made, since the hypotheses inferred from each tip are not always compatible. As I mentioned, implementing that option is a fun exercise.</p>
 
 		<figure id="table6">
 		<pre>
