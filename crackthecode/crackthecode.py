@@ -101,18 +101,6 @@ def infer(x, y, a):
 	return results
 
 
-def fits(a, b):
-	for i in range(3):
-		fit = a[1][i] == b[1][i] or a[1][i] == "_" or b[1][i] == "_"
-		if (a == b or a[0] == 0 and b[0] == 0):
-			continue
-		if (a[0] == 0 or b[0] == 0) and a[1][i] == b[1][i] and a[1][i] != "_" and b[1][i] != "_":
-			return False
-		if (a[0] == 1 and b[0] == 1) and not fit:
-			return False
-	return True
-
-
 def solution_fits(solution):
 	for i in range(3):
 		a = None
@@ -136,14 +124,8 @@ def solution_fits(solution):
 
 
 def combine(H):
-
-	# It is possible to use a custom implementation of
-	# itertools.product() to remove partial solutions
-	# that don't fit early on instead of creating them
-	# in whole.
 	combinations = product(*H)
 	for c in combinations:
-		#d = list(c)
 		if solution_fits(c):
 			yield c
 
@@ -326,7 +308,7 @@ if __name__ == '__main__':
 	for code in crackthecode(tips):
 		print("Solution:", code)
 
-	# Solutions: [1, 2, 3], [2, 4, 9], [3, 9, 3] ??, [5, 2, 3]
+	# Solutions: [1, 2, 3], [2, 4, 9], [3, 9, 3], [5, 2, 3]
 	print("_________")
 	print("Code: 123")
 	tips = [
@@ -343,9 +325,6 @@ if __name__ == '__main__':
 	tips = [(2, 1, [3, 1, 4]), (0, 0, [5, 6, 0]), (1, 0, [2, 1, 4]), (2, 1, [3, 8, 7])]
 	for code in crackthecode(tips):
 		print("Solution:", code)
-	# Should it be possible to include digits that have
-	# not been in any of the positive hypotheses, in
-	# the code? Why or why not?
 
 	print("_________")
 	print("Code (generated tips): ", [1, 6, 3])
@@ -365,6 +344,3 @@ if __name__ == '__main__':
 	]
 	for code in crackthecode(tips):
 		print("Solution:", code)
-
-	#r = solution_fits2([])
-	#import pdb; pdb.set_trace()
