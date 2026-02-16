@@ -109,14 +109,16 @@
 		<ul>
 			<li>The game starts by player one coming up with a secret code (three unique numbers). The same player then writes a series of tips (typically 4).</li>
 			<li>The code is a three-digit number (variants of the game where there are less or more than this exist).</li>
+			<li>The code may contain repeating digits, as in 343.</li>
 			<li>The other player uses the tips to figure out what the secret code is (there may be multiple solutions).</li>
 			<li>The tips must together contain each digit that is in the secret code.</li>
 			<li>Each tip typically indicate a part of the code. There are three components to a tip: 1) the digits (as many as there are in the secret code) 2) a number that indicate how many of the digits are also in the secret code 3) a number that indicate how many of the digits are correctly placed relative to the secret code.</li>
+			<li>The tip code may not contain repeating digits.</li>
 		</ul>
 
 		<h1 id="gamedictionary">4. Game dictionary</h1>
 		<ul>
-			<li>secret code: A three-digit (all unique) number that is only known to one of the players.</li>
+			<li>secret code: A three-digit number that is only known to one of the players.</li>
 			<li>digit: One of the elements in a code. For example, 1 in [1, 2, 3] is a digit.</li>
 			<li>tip: The three elements “number of digits in the code” (<i>x</i>), “number of correctly placed digits in the code” (<i>y</i>) and the digits that the previous two statements applies for (see <i>tip code</i>). x is always equal to or greater than y.
 			<li>x: See <i>tip</i>.</li>
