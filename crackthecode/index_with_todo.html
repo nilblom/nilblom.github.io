@@ -261,7 +261,7 @@
 
 		<h2 id="programmingroutines">6.2 Programming routines</h2>
 
-		<p>The main routine is simple: first hypotheses are created from the tips, and then they are combined. At the end (lines 12-13) it is made sure that only unique solutions are returned by the function. Checking if a solution is unique is done by simplifying the grand hypothesis into its simpler form [a, b, c] (line 9, 18-27). Because solutions may be incomplete (one of the slots that should hold a digit may not), solutions are checked for completeness (line 10). Checking the lists of hypotheses for uniqueness would never result in a duplicate. Can you guess why?</p>
+		<p>The main routine is simple: first hypotheses are created from the tips, and then they are combined. At the end (lines 12-13) it is made sure that only unique solutions are returned by the function. Checking if a solution is unique is done by simplifying the grand hypothesis into its simpler form [a, b, c] (line 9, 18-27). Checking the lists of hypotheses for uniqueness would never result in a duplicate. Can you guess why? Because a grand hypotheses may be incomplete (one of the slots that should hold a digit may not), they are checked for completeness (line 10).</p>
 
 		<figure id="table5">
 		<pre>
@@ -302,7 +302,7 @@ def solution_is_complete(simple_form):
 		<caption>The main function of the program and the function that simplifies a grand hypothesis.</caption>
 		</figure>
 
-		<p>Below is how hypotheses are combined into grand hypotheses. <i>itertools.product()</i> from the Python standard library is used, with a call to check if the solution is compatible before yielding the result. It is possible to use a custom implementation of itertools.product() or use the function in more creative ways to remove partial solutions that don't fit early on instead of continue adding hypotheses to form a grand hypothesis. It should be possible to save on the comparisons made, since the hypotheses inferred from each tip are not always compatible. As I mentioned, implementing that option is a fun exercise.</p>
+		<p>Below is how hypotheses are combined into grand hypotheses. <i>itertools.product()</i> from the Python standard library is used, with a call to check if the solution is compatible before yielding the result. It is possible to use a custom implementation of itertools.product() or use the function in more creative ways to remove partial grand hypotheses that don't fit early on instead of continue adding hypotheses to form a grand hypothesis. It should be possible to save on the comparisons made, since the hypotheses inferred from each tip are not always compatible. As I mentioned, implementing that option is a fun exercise.</p>
 
 		<figure id="table6">
 		<pre>
