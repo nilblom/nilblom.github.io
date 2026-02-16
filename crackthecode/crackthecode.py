@@ -21,13 +21,15 @@ Codes have the form [a, b, c] where no number is repeated.
 """
 
 def negative_hypotheses(a):
+	results = []
 	q = deque(a)
 	for i in range(3):
 		q.rotate(1)
-		yield list(q)
+		results.append(list(q))
+	return results
 
 a = [5, 0, 6]
-n = list(negative_hypotheses(a))
+n = negative_hypotheses(a)
 assert n == [[6, 5, 0], [0, 6, 5], [5, 0, 6]]
 
 def mirror_numbers(a):
@@ -55,7 +57,7 @@ def infer(x, y, a):
 
 	if x == 0:
 		H = [ [[1, ["_", "_", "_"]]] ]
-		n = list(negative_hypotheses(a))
+		n = negative_hypotheses(a)
 		for h in n:
 			H[0].append([0, h])
 		return H
@@ -124,10 +126,12 @@ def solution_fits(solution):
 
 
 def combine(H):
+	results = []
 	combinations = product(*H)
 	for c in combinations:
 		if solution_fits(c):
-			yield c
+			results.append(c)
+	return results
 
 
 def simple_form(solution):

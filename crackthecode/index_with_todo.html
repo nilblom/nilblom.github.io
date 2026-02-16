@@ -100,6 +100,8 @@
 
 		<p>The method that is used in this article to crack the given code is similar to what I would do without pen and paper, although much more rigorous.</p>
 
+		<p>The solution is implemented in Python 3. Some knowledge about the language is useful. Only simple concepts in the language are used in the solution.</p>
+
 		<h1 id="whatiscrackthecode">2. What is 'Crack the Code'?</h1>
 
 		<p>'Crack the Code' is a game where a secret code is cracked with the help of tips that show how
@@ -309,10 +311,12 @@ def solution_is_complete(simple_form):
 		<figure id="table6">
 		<pre>
 def combine(H):
+	results = []
 	combinations = product(*H)
 	for c in combinations:
 		if solution_fits(c):
-			yield c</pre>
+			results.append(c)
+	return results</pre>
 		<caption>The function that combines hypotheses.</caption>
 		</figure>
 
@@ -357,7 +361,7 @@ def infer(x, y, a):
 
 	if x == 0:
 		H = [ [[1, ["_", "_", "_"]]] ]
-		n = list(negative_hypotheses(a))
+		n = negative_hypotheses(a)
 		for h in n:
 			H[0].append([0, h])
 		return H
@@ -402,15 +406,18 @@ def infer(x, y, a):
 		<caption>The function that creates hypotheses from one of the code tips.</caption>
 		</figure>
 
-		<p>To create the negative hypotheses from a tip code <i>a</i>, it is rotated three times (line , each time yielding a result.</p>
+		<p>To create the negative hypotheses from a tip code <i>a</i>, it is rotated three times (line 4), each time adding the rotation to the results.</p>
 
 		<figure id="table9">
 		<pre>
 def negative_hypotheses(a):
+	results = []
 	q = deque(a)
 	for i in range(3):
 		q.rotate(1)
-		yield list(q)
+		results.append(list(q))
+	return results
+
 
 def mirror_numbers(a):
 	numbers = []
