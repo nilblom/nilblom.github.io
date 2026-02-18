@@ -37,7 +37,6 @@
 			<ul>
 				<li>Can it be included in a book? How can I find someone interested. Contact a publisher.</li>
 				<li>List of tables should not include program code</li>
-				<li>Explain the solution using the tables</li>
 				<li>Include a link to the program</li>
 				<li>Make lock image JPG (small size)</li>
 				<li>Change publishing date before publish</li>
@@ -241,11 +240,35 @@
 
 		<h2 id="combininghypotheses">5.5 Combining hypotheses</h2>
 
-		Like you saw in the previous sections, hypotheses have been noted for each of the four tips. They can now be combined in different ways to form grand hypotheses. One (or sometimes several) of them are solutions while others are not.
+		<p>Like you saw in the previous sections, hypotheses have been noted for each of the four tips. They can now be combined in different ways to form grand hypotheses. One (or sometimes several) of them are solutions while others are not.</p>
 
-		Only hypotheses that are compatible with each other can be combined to form a grand hypotheses. Compatability can be defined as a function that takes two or more hypotheses and makes a series of comparisons between the two. It works like this: pick a digit from one of the positive hypotheses. It should be in the first position. For all other positive hypotheses, it should be the case that the value in the same position is equal to that digit or is blanked. For all negative hypotheses it should be the case that the position is blanked or is not held by the same digit.
+		<p>To form a grand hypotheses, one picks one hypothesis from each set of hypotheses that were created from each of the tips.</p>
 
-		Once you have understood the concept of compatible hypotheses, it is relatively easy to pick out compatible ones that form a solution from the tables above simply with your eye.
+		<p>Only hypotheses that are compatible with each other can be combined to form a solution, and for completeness all of the three slots in the code must be occupied by a digit. Compatability can be defined as a function that takes two or more hypotheses and makes a series of comparisons between the two. It works like this: pick a digit from one of the positive hypotheses. It should be in the first position. For all other positive hypotheses, it should be the case that the value in the same position is equal to that digit or is blanked. For all negative hypotheses it should be the case that the position is blanked or is not held by the same digit.</p>
+
+		<p>Ideally, one should compare two hypotheses to start with, and only continue comparing the third (and later, the fourth) if the first two are compatible. This method avoids unnecessary comparisons and so saves time.</p>
+
+		<p>Once you have understood the concept of compatible hypotheses, it is relatively easy to pick out compatible ones that form a solution from the tables above simply with your eye.</p>
+
+		<p>For illustration, below are the four hypotheses that form the solution for the example game. They are the same hypotheses that are contained in the black cells in the previous tables. If you follow the algorithm described in the third paragraph in this section, you will find that the hypotheses are compatible. The first digit as 3 is described by both the first and the last hypotheses, and the rest of the hypotheses allow for any digit. The second digit as 4 is described by the first and the third hypotheses, and the two other hypotheses allow for any digit. The last digit as 8 is being described by the last hypotheses, and the rest allow for any digit. Each negative hypotheses describe digits that are not present in any of the positive hypotheses. Therefore the four hypotheses below form a solution. The simple form of the solution is 348.</p>
+
+		<figure>
+		<table id="table11" border=1px style="caption-side: bottom;font-family: monospace;">
+			<caption>Hypotheses that forms a solution for the example game.</caption>
+			<tr>
+				<td>34_ (__1,)</td>
+			</tr>
+			<tr>
+				<td>___ (650, 065, 506)</td>
+			</tr>
+			<tr>
+				<td>_4_ (2_1, 1_2,)</td>
+			</tr>
+			<tr>
+				<td>3_8 (_7_,)</td>
+			</tr>
+		</table>
+		</figure>
 
 		<h2 id="programmingasolutionfinder">6. Programming a solution finder</h2>
 
