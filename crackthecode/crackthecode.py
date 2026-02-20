@@ -159,7 +159,6 @@ def combine_cheap(H, callback):
 
 a = [[1, 2, 3, 4], [1], [1, 2], [1, 2, 3]]
 r = combine_cheap(a, lambda x: True)
-#print(r)
 assert r == [
 	[1, 1, 1, 1],
 	[1, 1, 1, 2],
