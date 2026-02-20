@@ -85,7 +85,7 @@ def infer(x, y, a):
 					exclude[1][number] = c[number]
 					c[number] = "_"
 
-			if correctly_placed	!= y:
+			if correctly_placed != y:
 				continue
 
 			if c in seen_positive_hypotheses:
