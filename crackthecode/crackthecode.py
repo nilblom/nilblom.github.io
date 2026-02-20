@@ -125,13 +125,76 @@ def solution_fits(solution):
 	return True
 
 
-def combine(H):
-	results = []
-	combinations = product(*H)
-	for c in combinations:
-		if solution_fits(c):
-			results.append(c)
-	return results
+def flatten(L):
+	L = list(L)
+	L[0] = list(L[0])
+	L[0].extend(L[1:])
+	L = L[0]
+	return L
+
+L = ((1, 2), 3)
+L = flatten(L)
+assert L == [1, 2, 3]
+
+
+def combine_cheap(H, callback):
+	i = 1
+	C = H[0]
+	while i < len(H):
+		C = list(product(C, H[i]))
+		k = 0
+		while i > 1 and k < len(C):
+			C[k] = flatten(C[k])
+
+			# solution_fits() is inserted here as a
+			# "callback", so that combine_cheap() can
+			# have a clean test-case.
+			if not callback(C[k]):
+				C.pop(k)
+			else:
+				k += 1
+		i += 1
+	return C
+
+
+a = [[1, 2, 3, 4], [1], [1, 2], [1, 2, 3]]
+r = combine_cheap(a, lambda x: True)
+#print(r)
+assert r == [
+	[1, 1, 1, 1],
+	[1, 1, 1, 2],
+	[1, 1, 1, 3],
+	[1, 1, 2, 1],
+	[1, 1, 2, 2],
+	[1, 1, 2, 3],
+	[2, 1, 1, 1],
+	[2, 1, 1, 2],
+	[2, 1, 1, 3],
+	[2, 1, 2, 1],
+	[2, 1, 2, 2],
+	[2, 1, 2, 3],
+	[3, 1, 1, 1],
+	[3, 1, 1, 2],
+	[3, 1, 1, 3],
+	[3, 1, 2, 1],
+	[3, 1, 2, 2],
+	[3, 1, 2, 3],
+	[4, 1, 1, 1],
+	[4, 1, 1, 2],
+	[4, 1, 1, 3],
+	[4, 1, 2, 1],
+	[4, 1, 2, 2],
+	[4, 1, 2, 3]
+]
+
+# Remains for speed comparisons.
+# def combine(H):
+# 	results = []
+# 	combinations = product(*H)
+# 	for c in combinations:
+# 		if solution_fits(c):
+# 			results.append(c)
+# 	return results
 
 
 def simple_form(solution):
@@ -156,8 +219,8 @@ def crackthecode(tips):
 	hypotheses = []
 	for tip in tips:
 		hypotheses.append(list(infer(tip[0], tip[1], tip[2])))
-	
-	solutions = combine(hypotheses)
+
+	solutions = combine_cheap(hypotheses, solution_fits)
 	unique_solutions = []
 	
 	for s in solutions:
