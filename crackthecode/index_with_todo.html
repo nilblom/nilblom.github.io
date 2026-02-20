@@ -36,9 +36,6 @@
 		<div style="background:red;border:1px solid;">
 			<ul>
 				<li>Can it be included in a book? How can I find someone interested. Contact a publisher.</li>
-				<li>List of tables should not include program code</li>
-				<li>Include a link to the program</li>
-				<li>Make lock image JPG (small size)</li>
 				<li>Change publishing date before publish</li>
 			</ul>
 		</div>
@@ -83,6 +80,12 @@
         	<li><a href="#table2">5.2.1 Hypotheses for 560, x=0, y=0</a></li>
         	<li><a href="#table3">5.3.1 Hypotheses for 214, x=1, y=0</a></li>
         	<li><a href="#table4">5.4.1 Hypotheses for 387, x=2, y=1</a></li>
+        	<li><a href="#table11">5.5.1 Solution for the example game</a></li>
+        </ol>
+
+        <p>List of programming code</p>
+
+        <ol>
         	<li><a href="#table5">6.2.1 Main function of the program</a></li>
         	<li><a href="#table6">6.2.2 Function for combining hypotheses</a></li>
         	<li><a href="#table7">6.2.3 Function for checking compatibility</a></li>
@@ -91,7 +94,7 @@
         	<li><a href="#table10">6.2.1.1 Function for generating tips</a></li>
         </ol>
 
-		<center><img src="padlock.png" width="200px"/></center>
+		<center><img src="padlock.jpg" width="200px"/></center>
 
 		<h1 id="forewords">1. Forewords</h1>
 
@@ -157,7 +160,7 @@
 
 		<figure>
 		<table id="table1" border=1px style="caption-side: bottom;font-family: monospace;">
-			<caption>Hypotheses for 314, x=2, y=1.</caption>
+			<caption>Table 5.1.1: Hypotheses for 314, x=2, y=1.</caption>
 		<tr>
 			<td style="background:red;">31_ (__4,)</td><td style="background:red;">31_ (__4,)</td><td>_34 (1__,)</td>
 		</tr>
@@ -173,7 +176,7 @@
 		</table>
 		</figure>
 
-		<h2 id="tip2">5.2 Tip 2/4: x=0 y=0 560</h2>
+		<h2 id="tip2">Table 5.1.1: 5.2 Tip 2/4: x=0 y=0 560</h2>
 
 		<p>A tip where x=0, y=0 can be interpreted as an empty positive hypothesis. Any digit may occur except for the ones in the tip code. To express that, negative hypotheses are created. It is enough to create hypotheses such that each digit has occupied every slot in total (you can do this by rotating the number three times). Why is it enough? The x=0 y=0 type tips express that each number in the tip code may not occur in any position in the code. If one creates negative hypotheses where each digit has (in total) occupied every position, the same idea has been expressed.</p>
 
@@ -183,7 +186,7 @@
 
 		<figure>
 		<table id="table2" border=1px style="caption-side:bottom;font-family: monospace;">
-		<caption>Hypotheses for 560, x=0, y=0.</caption>
+		<caption>Table 5.2.1: Hypotheses for 560, x=0, y=0.</caption>
 		<tr>
 			<td style="color: white; background: black;">___ (650, 065, 506)</td>
 		</tr>
@@ -198,7 +201,7 @@
 
 		<figure>
 		<table id="table3" border=1px style="caption-side: bottom;font-family: monospace;">
-			<caption>Hypotheses for 214, x=1, y=0.</caption>
+			<caption>Table 5.3.1: Hypotheses for 214, x=1, y=0.</caption>
 		<tr>
 			<td>_2_ (1_4, 4_1,)</td><td>1__ (_24, _42,)</td><td>4__ (_21, _12,)</td>
 		</tr>
@@ -214,7 +217,7 @@
 
 		<figure>
 		<table id="table4" border=1px style="caption-side: bottom;font-family: monospace;">
-			<caption>Hypotheses for 387, x=2, y=1.</caption>
+			<caption>Table 5.4.1: Hypotheses for 387, x=2, y=1.</caption>
 		<tr>
 			<td style="background:red;">38_ (__7,)</td>
 			<td style="background:red;">38_ (__7,)</td>
@@ -250,11 +253,11 @@
 
 		<p>Once you have understood the concept of compatible hypotheses, it is relatively easy to pick out compatible ones that form a solution from the tables above simply with your eye.</p>
 
-		<p>For illustration, below are the four hypotheses that form the solution for the example game. They are the same hypotheses that are contained in the black cells in the previous tables. If you follow the algorithm described in the third paragraph in this section, you will find that the hypotheses are compatible. The first digit as 3 is described by both the first and the last hypotheses, and the rest of the hypotheses allow for any digit. The second digit as 4 is described by the first and the third hypotheses, and the two other hypotheses allow for any digit. The last digit as 8 is being described by the last hypotheses, and the rest allow for any digit. Each negative hypotheses describe digits that are not present in any of the positive hypotheses. Therefore the four hypotheses below form a solution. The simple form of the solution is 348.</p>
+		<p>For illustration, below are the four hypotheses that form the solution for the example game. They are the same hypotheses that are contained in the black cells in the previous tables. If you follow the algorithm described in the third paragraph in this section, you will find that the hypotheses are compatible. The first digit as 3 is described by both the first and the last hypotheses, and the rest of the hypotheses allow for any digit. The second digit as 4 is described by the first and the third hypotheses, and the two other hypotheses allow for any digit. The last digit as 8 is being described by the last hypothesis, and the rest allow for any digit. Each negative hypothesis describe digits that are not present in any of the positive hypotheses. Therefore the four hypotheses below form a solution. The simple form of the solution is 348.</p>
 
 		<figure>
 		<table id="table11" border=1px style="caption-side: bottom;font-family: monospace;">
-			<caption>Hypotheses that forms a solution for the example game.</caption>
+			<caption>Table 5.5.1: Hypotheses that forms a solution for the example game.</caption>
 			<tr>
 				<td>34_ (__1,)</td>
 			</tr>
@@ -274,11 +277,9 @@
 
 		<p>The method used so far is enough of a method that it can be programmed into a computer program.</p>
 
-		<p>One thing that was not addressed in the previous sections is how to in practice combine the hypotheses and decide if they are all compatible with each other (the goal here is to find out if they can form a solution). To programmatically find the solutions from the lists of hypotheses, we can create the cartesian product of the four tables. It involves finding every combination of one hypotheses from each table. Then it is a matter of computing if they are compatible or not. If all hypotheses are compatible with each other (see <a href="#combininghypotheses">Combining hypotheses</a>), a grand hypothesis is also a solution.</p>
+		<p>One thing that was not addressed in the previous sections is how to in practice combine the hypotheses and decide if they are all compatible with each other (the goal here is to find out if they can form a solution). To programmatically find the solutions from the lists of hypotheses, we can create the cartesian product of the four tables. It involves finding every combination of one hypotheses from each table and at each step of combining a hypotheses with one from the next table, check for compatibility (see <a href="#combininghypotheses">Combining hypotheses</a>). If two (or more) hypotheses are not compatible, any further exploration using those hypotheses as a base to which you could add another hypotheses is pointless. That way the computer never creates grand hypotheses that are not solutions, thus saving power and time. Because the items that need to be combined are relatively few, there is less gain to be had compared to if the items were in the thousands, ten-thousands or hundreds of thousands.</p>
 
-		<p>There is also the possibility to, at each step of combining a hypotheses with one from the next table, checking for compatibility. That way the computer never creates grand hypotheses that are not solutions, thus saving power. Because the items that need to be combined are relatively few, there is less gain to be had compared to if the items were in the thousands, ten-thousands or hundreds of thousands.</p>
-
-		<p>Let's move on to how to complete the program. To start with, in order to write a program that can solve Crack the Code, the input to the program (the tips) must be coded for the computer. I decided to use the Python programming language because of its simplicity. The following sections are easier to follow if you have already learned Python.</p>
+		<p>Let's move on to how to complete the program. To start with, in order to write a program that can solve Crack the Code, the input to the program (the tips) must be coded for the computer. I decided to use the Python programming language (version 3) because of its simplicity. The following sections are easier to follow if you have already learned Python.</p>
 
 		<h3 id="creatingdatastructures">6.1 Creating data structures</h3>
 
@@ -297,7 +298,7 @@ def crackthecode(tips):
 	for tip in tips:
 		hypotheses.append(list(infer(tip[0], tip[1], tip[2])))
 	
-	solutions = combine(hypotheses)
+	solutions = combine_cheap(hypotheses)
 	unique_solutions = []
 	
 	for s in solutions:
@@ -326,21 +327,38 @@ def solution_is_complete(simple_form):
 	if -1 in simple_form:
 		return False
 	return True</pre>
-		<caption>The main function of the program and the function that simplifies a grand hypothesis.</caption>
+		<caption>Table 6.2.1: The main function of the program and the function that simplifies a grand hypothesis.</caption>
 		</figure>
 
-		<p>Below is how hypotheses are combined into grand hypotheses. <i>itertools.product()</i> from the Python standard library is used, with a call to check if the solution is compatible before yielding the result. It is possible to use a custom implementation of itertools.product() or use the function in more creative ways to remove partial grand hypotheses that don't fit early on instead of continue adding hypotheses to form a grand hypothesis. It should be possible to save on the comparisons made, since the hypotheses inferred from each tip are not always compatible. As I mentioned, implementing that option is a fun exercise.</p>
+		<p>Below is how hypotheses are combined into grand hypotheses. <i>itertools.product()</i> from the Python standard library is used (line 4), with a call to check if hypotheses are compatible (line 8). Partial results, combinations of hypotheses, that are not compatible are removed early on (line 9) instead of continue adding hypotheses. It saves on the number of compatibility checks made, since the hypotheses inferred from each tip are not always compatible.</p>
+
+		<p>At each intermediary result from calls to <i>product()</i>, the previous result is added as the first element in the new result, but as a tuple (it was the result of combining two hypotheses). The result looks like ((1, 1), 1). The <i>flatten()</i> function therefore unpacks the previous result in the new result (line 7).</p>
 
 		<figure id="table6">
 		<pre>
-def combine(H):
-	results = []
-	combinations = product(*H)
-	for c in combinations:
-		if solution_fits(c):
-			results.append(c)
-	return results</pre>
-		<caption>The function that combines hypotheses.</caption>
+def combine_cheap(H):
+	i = 1
+	C = H[0]
+	while i < len(H):
+		C = list(product(C, H[i]))
+		k = 0
+		while i > 1 and k < len(C):
+			C[k] = flatten(C[k])
+			if not solution_fits(C[k]):
+				C.pop(k)
+			else:
+				k += 1
+		i += 1
+	return C
+
+
+def flatten(L):
+	L = list(L)
+	L[0] = list(L[0])
+	L[0].extend(L[1:])
+	L = L[0]
+	return L</pre>
+		<caption>Table 6.2.2: The function that combines hypotheses.</caption>
 		</figure>
 
 		<p>The function that check for compatibility of hypotheses is shown below. It uses the fact that you can line up all the hypotheses, positive and negative, and for each position of the digits, pick the first occurring digit among the positive hypotheses. All positive hypotheses must then either have a "_" or the same digit that was found earlier in that position in order for it to be a solution. All negative hypotheses must have a different digit or a "_". The same method is applied to all of the positions that a digit in the code can have (1, 2, 3).</p>
@@ -367,7 +385,7 @@ def solution_fits(solution):
 					if x[1][i] == a and x[1][i] != "_":
 						return False
 	return True</pre>
-		<caption>Functions to check for compatibility of hypotheses.</caption>
+		<caption>Table 6.2.3: Functions to check for compatibility of hypotheses.</caption>
 		</figure>
 
 		<p>The function that creates hypotheses from the tips require some explanation. If x=0 then only negative hypotheses need to be created (with the obligatory empty positive hypotheses). The function <i>negative_hypotheses()</i> can be seen below <i>infer()</i>.</p>
@@ -426,7 +444,7 @@ def infer(x, y, a):
 				results.append((c, exclude))
 
 	return results</pre>
-		<caption>The function that creates hypotheses from one of the code tips.</caption>
+		<caption>Table 6.2.4: The function that creates hypotheses from one of the code tips.</caption>
 		</figure>
 
 		<p>To create the negative hypotheses from a tip code <i>a</i>, it is rotated three times (line 4), each time adding the rotation to the results.</p>
@@ -456,7 +474,7 @@ def mirror_numbers(a):
 	if b == a:
 		return None
 	return b</pre>
-		<caption>Functions for creating the codes in a negative hypotheses and mirroring the numbers of a negative hypotheses.</caption>
+		<caption>Table 6.2.5: Functions for creating the codes in a negative hypotheses and mirroring the numbers of a negative hypotheses.</caption>
 		</figure>
 
 		<h3 id="generatingtips">6.2.1 Generating tips</h3>
@@ -464,6 +482,8 @@ def mirror_numbers(a):
 		<p>The program would not be complete without a routine to create a new set of tips that, of course, the program can solve. The code below creates a set of tips for a given code (in other words, you come up with the code and the tips are created for you).</p>
 
 		<p>The while-loop (line 17) loops 4 times to create four tips. Each time, three numbers are selected at random from a <i>pool</i> (line 20-22) (each number can only be picked once, like a pool of water where water actually is removed if you take some out). x and y are inferred from the randomly selected numbers using the inner functions <i>infer_x()</i> (line 2) and <i>infer_y()</i> (line 9).</p>
+
+		<p>A check is made to ensure that all of the digits in the code are also in the tips (line 41). This is one of the definitions of how the game works.</p>
 
 		<figure id="table10">
 		<pre>
@@ -483,21 +503,36 @@ def generate_tips(code):
 				y += 1
 		return y
 
+	def tips_contains_code(tips, code):
+		digits = []
+		for x, y, numbers in tips:
+			digits.extend(numbers)
+		for d in code:
+			if d not in digits:
+				return False
+		return True
+
 	tips = []
-	while len(tips) < 4:
-		pool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-		numbers = [pool.pop(random.randint(0, len(pool)-1)),
-			pool.pop(random.randint(0, len(pool)-1)),
-			pool.pop(random.randint(0, len(pool)-1))]
-		
-		x = infer_x(code, numbers)
-		y = infer_y(code, numbers)
+	while True:
+		tips = []
+		while len(tips) < 4:
+			pool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-		tips.append((x, y, numbers))
+			numbers = [pool.pop(random.randint(0, len(pool)-1)),
+				pool.pop(random.randint(0, len(pool)-1)),
+				pool.pop(random.randint(0, len(pool)-1))]
+			
+			x = infer_x(code, numbers)
+			y = infer_y(code, numbers)
+
+			tips.append((x, y, numbers))
+
+		if tips_contains_code(tips, code):
+			break
 
 	return tips</pre>
-	<caption>A Python routine to generate four tips; you give it the secret code that you want.</caption>
+	<caption>Table 6.2.1.1: A Python routine to generate four tips; you give it the secret code that you want.</caption>
 	</figure>
 
 
