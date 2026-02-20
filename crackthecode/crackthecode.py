@@ -205,7 +205,7 @@ def simple_form(solution):
 			continue
 		for i in range(3):
 			if hyp[1][i] != "_":
-				simple[i] = hyp[1][i]		
+				simple[i] = hyp[1][i]       
 	return simple
 
 
