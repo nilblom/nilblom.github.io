@@ -249,18 +249,33 @@ def generate_tips(code):
 				y += 1
 		return y
 
+	def tips_contains_code(tips, code):
+		digits = []
+		for x, y, numbers in tips:
+			digits.extend(numbers)
+		for d in code:
+			if d not in digits:
+				return False
+		return True
+
 	tips = []
-	while len(tips) < 4:
-		pool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-		numbers = [pool.pop(random.randint(0, len(pool)-1)),
-			pool.pop(random.randint(0, len(pool)-1)),
-			pool.pop(random.randint(0, len(pool)-1))]
-		
-		x = infer_x(code, numbers)
-		y = infer_y(code, numbers)
+	while True:
+		tips = []
+		while len(tips) < 4:
+			pool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-		tips.append((x, y, numbers))
+			numbers = [pool.pop(random.randint(0, len(pool)-1)),
+				pool.pop(random.randint(0, len(pool)-1)),
+				pool.pop(random.randint(0, len(pool)-1))]
+			
+			x = infer_x(code, numbers)
+			y = infer_y(code, numbers)
+
+			tips.append((x, y, numbers))
+
+		if tips_contains_code(tips, code):
+			break
 
 	return tips
 
