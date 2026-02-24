@@ -1,0 +1,496 @@
+<html>
+	<head>
+		<title>Nils Blomqvist's web page</title>
+		<link rel="stylesheet" href="../style.css?v=202602201008">
+		<script>
+
+			function number_pre_lines(pres) {
+				for (var i = 0; i < pres.length; i++) {
+					var old_text = pres[i].innerText;
+					var line_count = 0;
+					pres[i].innerText = "";
+					for (var j = 0; j < old_text.length; j++) {
+						if (j == 0) {
+							pres[i].innerText += line_count + " " + old_text[j];
+							line_count++;
+						} else if (old_text[j] == "\n") {
+							pres[i].innerText += old_text[j] + line_count + " ";
+							line_count++;
+						} else {
+							pres[i].innerText += old_text[j];
+						}
+					}
+				}
+			};
+
+			document.addEventListener("DOMContentLoaded",  function() {
+				// console.log("hi");
+				var pres = document.querySelectorAll("pre");
+				number_pre_lines(pres);
+			});
+		</script>
+	</head>
+	<body>
+		<h1><a href="../">< home</a> A cartesian product algorithm</h1>
+
+		<p>Timeline:</p>
+		<ul>
+			<li>2026-02-25: First published.</li>
+		</ul>
+
+		<p>The program can be downloaded <a href="./cartesianproduct.py">here</a>.
+
+		<p>Table of Contents</p>
+		<ol>
+			<li><a href="#forewords">1. Forewords</a></li>
+            <li><a href="#whatiscartesianproduct">2. What is the cartesian product?</li>
+            <li><a href="#examples">3. Finding the pattern</a></li>
+            <li><a href="#programmingasolution">4. Programming a solution</a></li>
+            <li><a href="#doyouhavequestions">5. Do you have questions about this writeup?</a></li>
+        </ol>
+
+        <p>List of interactive tools</p>
+
+        <ol>
+        	<li><a href="#tool1">2.1: Cartesian product digit counter</a></li>
+        </ol>
+
+        <p>List of programming code</p>
+
+        <ol>
+        	<li><a href="#table1">4.1 Calculating the cartesian product</a></li>
+        </ol>
+
+        <h2>1. Forewords</h2>
+
+        <p>I started thinking about how the cartesian product was created when writing about <a href="../crackthecode">Crack the Code</a>.</p>
+
+        <h2>2. What is the cartesian product?</h2>
+
+        <p>The cartesian product of two or more sets (a list of unique items) is when you combine the items from each set so that every combination is unique, and you do this for all the items.</p>
+
+        <p>As an example, I define four sets of elements. Each set has 4 members. In order to create the cartesian product, one can first pick one of the elements in the first set and combine it with the first elements in the rest of the sets. This produces the first combination. Then take the second element in the first set and combine that with the first elements in the rest of the sets. It keeps going until all of the elements in the first set have alternated. Each time a new combination is yielded. Then it is time to alternate the element in the second set, but every time one does so, go back to the element in the first set and alternate it (like before). Again, each time that the first element in the combination is alternated, a new combination has been yielded. This general pattern keeps going until the end state which is when all of the slots in the combination show the maximum (or the last) value. The number of combinations in total is the product of the length of the sets, so A x B for the cartesian product of the sets A and B.</p>
+
+        <!-- JS-enabled interactive slider that can be incremented (and decremented?) in order to show the different combinations. -->
+
+        <p>As an illustration, below is a counter that you can use interactively. With the <i>next</i> and <i>previous</i> buttons you can move to the next or previous combination of the sets [0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3]. This counter uses the results from the <i>cartesian_product()</i> algorithm that is presented later. The number of combinations is 4 x 4 x 4 x 4 = 256.</p>
+
+        <figure id="tool1">
+        <center>
+        <div style="font-family:monospace;display:inline-block;">
+        	<span style="padding:5px;font-size:16px;display:inline-block;margin:5px;border:1px solid;" id="counter"></span>
+        	<div>
+        	<button id="next">next</button>
+        	<button id="prev">previous</button>
+        	</div>
+        </div>
+    	</center>
+
+        <script>
+        	var states = [
+				[0, 0, 0, 0],
+				[1, 0, 0, 0],
+				[2, 0, 0, 0],
+				[3, 0, 0, 0],
+				[0, 1, 0, 0],
+				[1, 1, 0, 0],
+				[2, 1, 0, 0],
+				[3, 1, 0, 0],
+				[0, 2, 0, 0],
+				[1, 2, 0, 0],
+				[2, 2, 0, 0],
+				[3, 2, 0, 0],
+				[0, 3, 0, 0],
+				[1, 3, 0, 0],
+				[2, 3, 0, 0],
+				[3, 3, 0, 0],
+				[0, 0, 1, 0],
+				[1, 0, 1, 0],
+				[2, 0, 1, 0],
+				[3, 0, 1, 0],
+				[0, 1, 1, 0],
+				[1, 1, 1, 0],
+				[2, 1, 1, 0],
+				[3, 1, 1, 0],
+				[0, 2, 1, 0],
+				[1, 2, 1, 0],
+				[2, 2, 1, 0],
+				[3, 2, 1, 0],
+				[0, 3, 1, 0],
+				[1, 3, 1, 0],
+				[2, 3, 1, 0],
+				[3, 3, 1, 0],
+				[0, 0, 2, 0],
+				[1, 0, 2, 0],
+				[2, 0, 2, 0],
+				[3, 0, 2, 0],
+				[0, 1, 2, 0],
+				[1, 1, 2, 0],
+				[2, 1, 2, 0],
+				[3, 1, 2, 0],
+				[0, 2, 2, 0],
+				[1, 2, 2, 0],
+				[2, 2, 2, 0],
+				[3, 2, 2, 0],
+				[0, 3, 2, 0],
+				[1, 3, 2, 0],
+				[2, 3, 2, 0],
+				[3, 3, 2, 0],
+				[0, 0, 3, 0],
+				[1, 0, 3, 0],
+				[2, 0, 3, 0],
+				[3, 0, 3, 0],
+				[0, 1, 3, 0],
+				[1, 1, 3, 0],
+				[2, 1, 3, 0],
+				[3, 1, 3, 0],
+				[0, 2, 3, 0],
+				[1, 2, 3, 0],
+				[2, 2, 3, 0],
+				[3, 2, 3, 0],
+				[0, 3, 3, 0],
+				[1, 3, 3, 0],
+				[2, 3, 3, 0],
+				[3, 3, 3, 0],
+				[0, 0, 0, 1],
+				[1, 0, 0, 1],
+				[2, 0, 0, 1],
+				[3, 0, 0, 1],
+				[0, 1, 0, 1],
+				[1, 1, 0, 1],
+				[2, 1, 0, 1],
+				[3, 1, 0, 1],
+				[0, 2, 0, 1],
+				[1, 2, 0, 1],
+				[2, 2, 0, 1],
+				[3, 2, 0, 1],
+				[0, 3, 0, 1],
+				[1, 3, 0, 1],
+				[2, 3, 0, 1],
+				[3, 3, 0, 1],
+				[0, 0, 1, 1],
+				[1, 0, 1, 1],
+				[2, 0, 1, 1],
+				[3, 0, 1, 1],
+				[0, 1, 1, 1],
+				[1, 1, 1, 1],
+				[2, 1, 1, 1],
+				[3, 1, 1, 1],
+				[0, 2, 1, 1],
+				[1, 2, 1, 1],
+				[2, 2, 1, 1],
+				[3, 2, 1, 1],
+				[0, 3, 1, 1],
+				[1, 3, 1, 1],
+				[2, 3, 1, 1],
+				[3, 3, 1, 1],
+				[0, 0, 2, 1],
+				[1, 0, 2, 1],
+				[2, 0, 2, 1],
+				[3, 0, 2, 1],
+				[0, 1, 2, 1],
+				[1, 1, 2, 1],
+				[2, 1, 2, 1],
+				[3, 1, 2, 1],
+				[0, 2, 2, 1],
+				[1, 2, 2, 1],
+				[2, 2, 2, 1],
+				[3, 2, 2, 1],
+				[0, 3, 2, 1],
+				[1, 3, 2, 1],
+				[2, 3, 2, 1],
+				[3, 3, 2, 1],
+				[0, 0, 3, 1],
+				[1, 0, 3, 1],
+				[2, 0, 3, 1],
+				[3, 0, 3, 1],
+				[0, 1, 3, 1],
+				[1, 1, 3, 1],
+				[2, 1, 3, 1],
+				[3, 1, 3, 1],
+				[0, 2, 3, 1],
+				[1, 2, 3, 1],
+				[2, 2, 3, 1],
+				[3, 2, 3, 1],
+				[0, 3, 3, 1],
+				[1, 3, 3, 1],
+				[2, 3, 3, 1],
+				[3, 3, 3, 1],
+				[0, 0, 0, 2],
+				[1, 0, 0, 2],
+				[2, 0, 0, 2],
+				[3, 0, 0, 2],
+				[0, 1, 0, 2],
+				[1, 1, 0, 2],
+				[2, 1, 0, 2],
+				[3, 1, 0, 2],
+				[0, 2, 0, 2],
+				[1, 2, 0, 2],
+				[2, 2, 0, 2],
+				[3, 2, 0, 2],
+				[0, 3, 0, 2],
+				[1, 3, 0, 2],
+				[2, 3, 0, 2],
+				[3, 3, 0, 2],
+				[0, 0, 1, 2],
+				[1, 0, 1, 2],
+				[2, 0, 1, 2],
+				[3, 0, 1, 2],
+				[0, 1, 1, 2],
+				[1, 1, 1, 2],
+				[2, 1, 1, 2],
+				[3, 1, 1, 2],
+				[0, 2, 1, 2],
+				[1, 2, 1, 2],
+				[2, 2, 1, 2],
+				[3, 2, 1, 2],
+				[0, 3, 1, 2],
+				[1, 3, 1, 2],
+				[2, 3, 1, 2],
+				[3, 3, 1, 2],
+				[0, 0, 2, 2],
+				[1, 0, 2, 2],
+				[2, 0, 2, 2],
+				[3, 0, 2, 2],
+				[0, 1, 2, 2],
+				[1, 1, 2, 2],
+				[2, 1, 2, 2],
+				[3, 1, 2, 2],
+				[0, 2, 2, 2],
+				[1, 2, 2, 2],
+				[2, 2, 2, 2],
+				[3, 2, 2, 2],
+				[0, 3, 2, 2],
+				[1, 3, 2, 2],
+				[2, 3, 2, 2],
+				[3, 3, 2, 2],
+				[0, 0, 3, 2],
+				[1, 0, 3, 2],
+				[2, 0, 3, 2],
+				[3, 0, 3, 2],
+				[0, 1, 3, 2],
+				[1, 1, 3, 2],
+				[2, 1, 3, 2],
+				[3, 1, 3, 2],
+				[0, 2, 3, 2],
+				[1, 2, 3, 2],
+				[2, 2, 3, 2],
+				[3, 2, 3, 2],
+				[0, 3, 3, 2],
+				[1, 3, 3, 2],
+				[2, 3, 3, 2],
+				[3, 3, 3, 2],
+				[0, 0, 0, 3],
+				[1, 0, 0, 3],
+				[2, 0, 0, 3],
+				[3, 0, 0, 3],
+				[0, 1, 0, 3],
+				[1, 1, 0, 3],
+				[2, 1, 0, 3],
+				[3, 1, 0, 3],
+				[0, 2, 0, 3],
+				[1, 2, 0, 3],
+				[2, 2, 0, 3],
+				[3, 2, 0, 3],
+				[0, 3, 0, 3],
+				[1, 3, 0, 3],
+				[2, 3, 0, 3],
+				[3, 3, 0, 3],
+				[0, 0, 1, 3],
+				[1, 0, 1, 3],
+				[2, 0, 1, 3],
+				[3, 0, 1, 3],
+				[0, 1, 1, 3],
+				[1, 1, 1, 3],
+				[2, 1, 1, 3],
+				[3, 1, 1, 3],
+				[0, 2, 1, 3],
+				[1, 2, 1, 3],
+				[2, 2, 1, 3],
+				[3, 2, 1, 3],
+				[0, 3, 1, 3],
+				[1, 3, 1, 3],
+				[2, 3, 1, 3],
+				[3, 3, 1, 3],
+				[0, 0, 2, 3],
+				[1, 0, 2, 3],
+				[2, 0, 2, 3],
+				[3, 0, 2, 3],
+				[0, 1, 2, 3],
+				[1, 1, 2, 3],
+				[2, 1, 2, 3],
+				[3, 1, 2, 3],
+				[0, 2, 2, 3],
+				[1, 2, 2, 3],
+				[2, 2, 2, 3],
+				[3, 2, 2, 3],
+				[0, 3, 2, 3],
+				[1, 3, 2, 3],
+				[2, 3, 2, 3],
+				[3, 3, 2, 3],
+				[0, 0, 3, 3],
+				[1, 0, 3, 3],
+				[2, 0, 3, 3],
+				[3, 0, 3, 3],
+				[0, 1, 3, 3],
+				[1, 1, 3, 3],
+				[2, 1, 3, 3],
+				[3, 1, 3, 3],
+				[0, 2, 3, 3],
+				[1, 2, 3, 3],
+				[2, 2, 3, 3],
+				[3, 2, 3, 3],
+				[0, 3, 3, 3],
+				[1, 3, 3, 3],
+				[2, 3, 3, 3],
+				[3, 3, 3, 3]
+        	];
+
+        var state = 0;
+        var counter = document.getElementById("counter");
+        counter.innerText = states[state];
+        
+        var next = document.getElementById("next");
+        var prev = document.getElementById("prev");
+        next.addEventListener("click", function(e) {
+        	if (state == states.length-1) return;
+        	state++;
+        	counter.innerText = states[state]
+        });
+        prev.addEventListener("click", function(e) {
+        	if (state == 0) return;
+        	state--;
+        	counter.innerText = states[state]
+        });
+        </script>
+        <caption>Interactive tool 2.1: Try to increment the counter. You can see what the next combination of the four sets defined previously look like.</caption>
+    	</figure>
+
+        <h2 id="#examples">3. Finding the pattern</h2>
+
+        <p>If one uses the results of a few combinations of some sets, for example from the counter above, it is possible to identify what steps are taken to produce them.</p>
+
+        <p>One can define a simple machine with a few instructions in order to illustrate what the steps are to produce the cartesian product. The machine works on a list of indices each of which represent one element from each list of elements.</p>
+
+        <p>The machine has the instructions <code>save</code> which saves the current state of the indices somewhere to that I can do something with it later. <code>inc</code> increments the digit at the position given as the argument. <code>reset</code> resets the digit at the position given as the argument. I have omitted any conditional checks to check if a digit has reached its maximum value and so on. This time I am only focusing on trying to find a general pattern for how the digits are incremented and reset to 0.</p>
+
+        <pre>
+save     = 0 0 0 0
+inc 0     
+save     = 1 0 0 0
+inc 0
+save     = 2 0 0 0
+inc 0
+save     = 3 0 0 0
+inc 1
+reset 0
+save     = 0 1 0 0
+inc 0
+save     = 1 1 0 0
+inc 0
+save     = 2 1 0 0
+inc 0
+save     = 3 1 0 0
+inc 1
+reset 0
+save     = 0 2 0 0
+inc 0
+save     = 1 2 0 0
+...</pre>
+
+        <p>The pattern I see here is that every time that a digit is increased, the previous digit must be reset to 0. And each digit must be increased until it reaches the maximum of that position.</p>
+
+        <h2 id="programmingasolution">4. Programming the solution</h2>
+
+        <p>From above, it should be possible to write a few lines of code (a call for <i>i=-1</i> is never necessary, because it would imply there is a slot "to the left" of the 0th slot):</p>
+
+        <pre>
+while indices[i] < max[i]:
+	# Do the same as is written here for i-1, if i > 0.
+	indices[i] += 1</pre>
+
+		<p>In the code snippet above, the digit at <i>i</i> in the <i>indices</i> is incremented until its maximum value is reached (the maximum value is stored in <i>max</i>). I also recognize that the previous digit must be incremented to its maximum value before incrementing the current digit, so before the current digit is incremented, the previous digits (<i>i < i<sub>current</sub></i>) are incremented using the same code. Because I cannot write the <i>while</i>-loop <i>L-1</i> number of times, where <i>L</i> is the number of slots in the combination, when <i>L</i> is unknown to the algorithm, there is a convenient method I can use in general programming known as <i>recursion</i> which is when a function can call itself. By using recursion the <i>i-1</i>th part of the indices can be computed upon until the first element is reached which is when a defined stop condition prevents the function from being called again.</p>
+
+		<p>I will continue improving the code a few times before it is finished, each time adding something significant to the structure of the code. In the code snippet above I wrote <i>Do the same for i-1 ...</i> so it is suitable to define a function and actually make a call to it:</p>
+
+		<pre>
+def cartesian_product(indices, max, i):
+	while indices[i] < max[i]:
+		if i > 0:
+			cartesian_product(indices, max, i-1)
+		indices[i] += 1</pre>
+
+		<p>Note that one only needs to save the state of the indices every time that the first slot is increased:</p>
+
+		<pre>
+def cartesian_product(indices, max, i):
+	while indices[i] < max[i]:
+		if i > 0:
+			cartesian_product(indices, max, i-1)
+		if i == 0:
+			# Do something with the indices.
+		indices[i] += 1</pre>
+
+		<p>Of course, one must also do something with state of the indices when a digit has reached the maximum value. Then a break condition is also neccessary, otherwise the <i>while</i>-loop would never terminate:</p>
+
+		<pre>
+def cartesian_product(indices, max, i):
+	while indices[i] <= max[i]:
+		if i > 0:
+			cartesian_product(indices, max, i-1)
+		if i == 0:
+			# Do something with the indices.
+		if indices[i] == max[i]:
+			break
+		indices[i] += 1</pre>
+
+		<p>Finally the previous digits must be reset once every time the current digit is about to be increased, and this needs to be done before the previous digits are increased.</p>
+
+		<pre>
+def cartesian_product(indices, max, i):
+	while indices[i] <= max[i]:
+		for k in range(0, i):
+			indices[k] = 0
+		if i > 0:
+			cartesian_product(indices, max, i-1)
+		if i == 0:
+			# Do something with the indices.
+		if indices[i] == max[i]:
+			break
+		indices[i] += 1</pre>
+
+		<p>The final code looks like below, when a starting function has been defined too. It takes a callback function so that you can do what you want with the indices once a new combination is calculated. It comes with a sample of how it can be used with four lists of digits from 1 through 4.</p>
+<figure id="table1">
+<pre>
+def cartesian_product(data, callback):
+	max_lengths = [len(x)-1 for x in data]
+	indices = [0 for x in data]
+	_cartesian_product(indices, max_lengths, len(data)-1, callback)
+
+
+def _cartesian_product(indices, max_lengths, i, callback):
+	while indices[i] <= max_lengths[i]:
+		for k in range(0, i):
+			indices[k] = 0
+		if i > 0:
+			_cartesian_product(indices, max_lengths, i-1, callback)
+		if i == 0:
+			callback(indices)
+		if indices[i] == max_lengths[i]:
+			break
+		indices[i] += 1
+
+
+if __name__ == '__main__':
+	data = [[1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]]
+	cartesian_product(data, lambda x: print([data[i][x[i]] for i in range(len(data))]))</pre>
+
+<caption>Table 4.1: The cartesian product algoritm.</caption>
+</figure>
+
+		<h1 id="doyouhavequestions">5. Do you have questions about this writeup?</h1>
+
+		<p>Please send your questions to <a href="mailto:nblomqvist834@gmail.com">nblomqvist834@gmail.com</a>.</p>
+
+	</body>
+</html>
