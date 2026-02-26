@@ -38,3 +38,29 @@ pre {
 figure {
 	display: inline-block;
 }
+
+.code-block {
+	display: flex;
+}
+
+.copy {
+	background: lightblue;
+	border: 1px solid blue;
+	padding: 5px;
+	margin-top: 10px;
+	display: inline-block;
+	border-radius: 3px;
+}
+
+.copy:hover {
+	cursor: pointer;
+}
+
+.code-block .code {
+	border-left: 0;
+	padding-left: 5px;
+}
+
+.code-block .line-numbers {
+	border-right: 0;
+}

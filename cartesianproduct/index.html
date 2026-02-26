@@ -1,52 +1,66 @@
 <html>
 	<head>
 		<title>Nils Blomqvist's web page</title>
-		<link rel="stylesheet" href="../style.css?v=202602201008">
+		<link rel="stylesheet" href="../style.css?v=202602261652">
 		<script>
 
-			function number_pre_lines(pres) {
-				for (var i = 0; i < pres.length; i++) {
-					var old_text = pres[i].innerText;
-					var line_count = 0;
-					pres[i].innerText = "";
-					for (var j = 0; j < old_text.length; j++) {
-						if (j == 0) {
-							pres[i].innerText += line_count + " " + old_text[j];
-							line_count++;
-						} else if (old_text[j] == "\n") {
-							pres[i].innerText += old_text[j] + line_count + " ";
-							line_count++;
-						} else {
-							pres[i].innerText += old_text[j];
+			function count_newlines(pre) {
+				var count = 0;
+				for (var i = 0; i < pre.innerText.length; i++)
+					if (pre.innerText[i] == "\n") count++;
+				return count;
+			}
+
+			function fill_line_numbers(pre, n) {
+				for (var i = 0; i < n; i++)
+					pre.innerText += i + "\n";
+			}
+
+			function number_code_blocks(code_blocks) {
+				for (var i = 0; i < code_blocks.length; i++) {
+					var lines = code_blocks[i].children[0];
+					var code = code_blocks[i].children[1];
+					var no_lines = 0;
+					for (var j = 0; j < code.innerText.length; j++) {
+						if (code.innerText[j] == "\n") {
+							lines.innerText += no_lines + "\n";
+							no_lines++;
 						}
 					}
+					lines.innerText += no_lines + "\n";
 				}
-			};
+
+			}
 
 			document.addEventListener("DOMContentLoaded",  function() {
-				// console.log("hi");
-				var pres = document.querySelectorAll("pre");
-				number_pre_lines(pres);
+					var codeblocks = document.querySelectorAll(".code-block");
+					number_code_blocks(codeblocks);
 			});
 		</script>
 	</head>
 	<body>
-		<h1><a href="../">< home</a> A cartesian product algorithm</h1>
+		<h1><a href="../">< home</a> A Cartesian product algorithm</h1>
 
 		<p>Timeline:</p>
 		<ul>
-			<li>2026-02-25: First published.</li>
+			<li>2026-02-26: First published.</li>
 		</ul>
 
-		<p>The program can be downloaded <a href="./cartesianproduct.py">here</a>.
+		<p>The final program can be downloaded <a href="./cartesianproduct.py">here</a>.
 
 		<p>Table of Contents</p>
 		<ol>
 			<li><a href="#forewords">1. Forewords</a></li>
-            <li><a href="#whatiscartesianproduct">2. What is the cartesian product?</li>
+            <li><a href="#whatiscartesianproduct">2. What is the Cartesian product?</li>
             <li><a href="#examples">3. Finding the pattern</a></li>
             <li><a href="#programmingasolution">4. Programming a solution</a></li>
             <li><a href="#doyouhavequestions">5. Do you have questions about this writeup?</a></li>
+        </ol>
+
+        <p>List of figures</p>
+
+        <ol>
+        	<li><a href="#figure1">3.1: A machine creating the Cartesian product</a></li>
         </ol>
 
         <p>List of interactive tools</p>
@@ -58,33 +72,32 @@
         <p>List of programming code</p>
 
         <ol>
-        	<li><a href="#table1">4.1 Calculating the cartesian product</a></li>
+        	<li><a href="#code1">4.1 Starting to write the code for the Cartesian product</a></li>
+        	<li><a href="#code2">4.2 A function <i>cartesian_product()</i> is defined</a></li>
+        	<li><a href="#code3">4.3 Code for saving the state of <i>indices</i> is added</a></li>
+        	<li><a href="#code4">4.4 Code for entering the <i>while</i>-loop when <i>indices[i] == max[i]</i> is added</a></li>
+        	<li><a href="#code5">4.5 The Cartesian product algorithm with the reset code added in</a></li>
+        	<li><a href="#code6">4.6 The Cartesian product algoritm with a few conveniences</a></li>
         </ol>
 
         <h2>1. Forewords</h2>
 
-        <p>I started thinking about how the cartesian product was created when writing about <a href="../crackthecode">Crack the Code</a>.</p>
+        <p>I started thinking about how the Cartesian product was created when writing about working on an algorithm to solve the game "Crack the Code" that you can find examples of on various websites including Facebook.</p>
 
-        <h2>2. What is the cartesian product?</h2>
+        <h2>2. What is the Cartesian product?</h2>
 
-        <p>The cartesian product of two or more sets (a list of unique items) is when you combine the items from each set so that every combination is unique, and you do this for all the items.</p>
+        <p>The Cartesian product of two or more sets (a list of unique items) is when you combine the items from each set so that every combination is unique, and you do this for all the items.</p>
 
-        <p>As an example, I define four sets of elements. Each set has 4 members. In order to create the cartesian product, one can first pick one of the elements in the first set and combine it with the first elements in the rest of the sets. This produces the first combination. Then take the second element in the first set and combine that with the first elements in the rest of the sets. It keeps going until all of the elements in the first set have alternated. Each time a new combination is yielded. Then it is time to alternate the element in the second set, but every time one does so, go back to the element in the first set and alternate it (like before). Again, each time that the first element in the combination is alternated, a new combination has been yielded. This general pattern keeps going until the end state which is when all of the slots in the combination show the maximum (or the last) value. The number of combinations in total is the product of the length of the sets, so A x B for the cartesian product of the sets A and B.</p>
-
-        <!-- JS-enabled interactive slider that can be incremented (and decremented?) in order to show the different combinations. -->
+        <p>As an example, I define four sets of elements. Each set has 4 members. In order to create the Cartesian product, one can first pick one of the elements in the first set and combine it with the first elements in the rest of the sets. This produces the first combination. Then take the second element in the first set and combine that with the first elements in the rest of the sets. It keeps going until all of the elements in the first set have alternated. Each time a new combination is yielded. Then it is time to alternate the element in the second set, but every time one does so, go back to the element in the first set and alternate it (like before). Again, each time that the first element in the combination is alternated, a new combination has been yielded. This general pattern keeps going until the end state which is when all of the slots in the combination show the maximum (or the last) value. The number of combinations in total is the product of the length of the sets, so A x B for the Cartesian product of the sets A and B.</p>
 
         <p>As an illustration, below is a counter that you can use interactively. With the <i>next</i> and <i>previous</i> buttons you can move to the next or previous combination of the sets [0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3]. This counter uses the results from the <i>cartesian_product()</i> algorithm that is presented later. The number of combinations is 4 x 4 x 4 x 4 = 256.</p>
 
         <figure id="tool1">
-        <center>
-        <div style="font-family:monospace;display:inline-block;">
-        	<span style="padding:5px;font-size:16px;display:inline-block;margin:5px;border:1px solid;" id="counter"></span>
-        	<div>
+        <div style="font-family:monospace;">
+        	<span style="padding:5px;font-size:16px;display:inline-block;margin-bottom:5px;border:1px solid;" id="counter"></span>
         	<button id="next">next</button>
         	<button id="prev">previous</button>
-        	</div>
         </div>
-    	</center>
 
         <script>
         	var states = [
@@ -370,10 +383,11 @@
 
         <p>If one uses the results of a few combinations of some sets, for example from the counter above, it is possible to identify what steps are taken to produce them.</p>
 
-        <p>One can define a simple machine with a few instructions in order to illustrate what the steps are to produce the cartesian product. The machine works on a list of indices each of which represent one element from each list of elements.</p>
+        <p>One can define a simple machine with a few instructions in order to illustrate what the steps are to produce the Cartesian product. The machine works on a list of indices each of which represent one element from each list of elements.</p>
 
         <p>The machine has the instructions <code>save</code> which saves the current state of the indices somewhere to that I can do something with it later. <code>inc</code> increments the digit at the position given as the argument. <code>reset</code> resets the digit at the position given as the argument. I have omitted any conditional checks to check if a digit has reached its maximum value and so on. This time I am only focusing on trying to find a general pattern for how the digits are incremented and reset to 0.</p>
 
+        <figure id="figure1">
         <pre>
 save     = 0 0 0 0
 inc 0     
@@ -397,56 +411,150 @@ save     = 0 2 0 0
 inc 0
 save     = 1 2 0 0
 ...</pre>
+<caption>Figure 3.1: A machine creating the Cartesian product.</caption>
+</figure>
 
         <p>The pattern I see here is that every time that a digit is increased, the previous digit must be reset to 0. And each digit must be increased until it reaches the maximum of that position.</p>
 
         <h2 id="programmingasolution">4. Programming the solution</h2>
 
-        <p>From above, it should be possible to write a few lines of code (a call for <i>i=-1</i> is never necessary, because it would imply there is a slot "to the left" of the 0th slot):</p>
+        <p>From above, it should be possible to write a few lines of code (a call for <i>i=-1</i> is never necessary, because it would imply there is a slot "to the left" of the 0th slot).</p>
 
-        <pre>
+		<p>Remember that <i>indices</i> and <i>max</i> were defined in the text previously, but they haven't been defined in code yet, so I do that below. Each set of elements thus has a length of 4 (the same number of elements in each).</p>
+
+		<figure id="code1">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code1" class="code">
+indices = [0, 0, 0, 0]
+max = [4, 4, 4, 4]
+i = 0
+
 while indices[i] < max[i]:
 	# Do the same as is written here for i-1, if i > 0.
 	indices[i] += 1</pre>
+		</div>
+		<caption>Table 4.1: Starting to write the code for the Cartesian product.</caption>
+		<br/>
+		<div class="copy" id="code1-copy">Copy code</div>
+		<script>
+			(function() {
+				var copy = document.getElementById("code1-copy");
+				var code = document.getElementById("code1");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
 
-		<p>In the code snippet above, the digit at <i>i</i> in the <i>indices</i> is incremented until its maximum value is reached (the maximum value is stored in <i>max</i>). I also recognize that the previous digit must be incremented to its maximum value before incrementing the current digit, so before the current digit is incremented, the previous digits (<i>i < i<sub>current</sub></i>) are incremented using the same code. Because I cannot write the <i>while</i>-loop <i>L-1</i> number of times, where <i>L</i> is the number of slots in the combination, when <i>L</i> is unknown to the algorithm, there is a convenient method I can use in general programming known as <i>recursion</i> which is when a function can call itself. By using recursion the <i>i-1</i>th part of the indices can be computed upon until the first element is reached which is when a defined stop condition prevents the function from being called again.</p>
+
+		<p>In the code snippet above, the digit at <i>i</i> in the <i>indices</i> is incremented until its maximum value is reached (the maximum value is stored in <i>max</i>). I also recognize that the previous digit must be incremented to its maximum value before incrementing the current digit, so before the current digit is incremented, the previous digits (<i>i < i<sub>current</sub></i>) are incremented using the same code. Because I cannot write the <i>while</i>-loop <i>L-1</i> number of times, where <i>L</i> is the number of slots in the combination, when <i>L</i> is unknown to the algorithm, there is a convenient method I can use in general programming known as <i>recursion</i> which is when a function can call itself. By using recursion the <i>i-1</i>th part of the indices can be computed upon until the first element (<i>i=0</i>) is reached which is when a defined stop condition prevents the function from being called again.</p>
 
 		<p>I will continue improving the code a few times before it is finished, each time adding something significant to the structure of the code. In the code snippet above I wrote <i>Do the same for i-1 ...</i> so it is suitable to define a function and actually make a call to it:</p>
 
-		<pre>
+		<figure id="code2">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code2" class="code">
 def cartesian_product(indices, max, i):
 	while indices[i] < max[i]:
 		if i > 0:
 			cartesian_product(indices, max, i-1)
-		indices[i] += 1</pre>
+		indices[i] += 1
 
-		<p>Note that one only needs to save the state of the indices every time that the first slot is increased:</p>
+cartesian_product(1)</pre>
+		</div>
+		<caption>Table 4.2: A function <i>cartesian_product()</i> is defined.</caption>
+		<br/>
+		<div class="copy" id="code2-copy">Copy code</div>
+		<script>
+			(function() {
+				var copy = document.getElementById("code2-copy");
+				var code = document.getElementById("code2");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
 
-		<pre>
+		<p>This time the digit at position 1 will be incremented to its maximum (4), but only after the digit at position 0 has been incremented to its maximum. After the function has run, <i>indices</i> will read [4, 4, 0, 0].</p>
+
+		<p>Right before each time that the 0th digit is incremented one can capture the state of <i>indices</i> in some way, for example using a <i>print()</i> statement. If I would have added <i>print()</i> so that it runs on a different level of recursion other than <i>i=0</i>, some combinations would be missed.</p>
+
+		<figure id="code3">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code3" class="code">
 def cartesian_product(indices, max, i):
 	while indices[i] < max[i]:
 		if i > 0:
 			cartesian_product(indices, max, i-1)
 		if i == 0:
 			# Do something with the indices.
-		indices[i] += 1</pre>
+			print(indices)
+		indices[i] += 1
 
-		<p>Of course, one must also do something with state of the indices when a digit has reached the maximum value. Then a break condition is also neccessary, otherwise the <i>while</i>-loop would never terminate:</p>
+cartesian_product(indices, max, 1)</pre>
+		</div>
+		<caption>Table 4.3: Code for saving the state of <i>indices</i> is added.</caption>
+		<br/>
+		<div class="copy" id="code3-copy">Copy code</div>
+		<script>
+			(function() {
+				var copy = document.getElementById("code3-copy");
+				var code = document.getElementById("code3");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
 
-		<pre>
+		<p>This time <i>indices</i> will be printed every time before the 0th digit is incremented.</p>
+
+		<p>The 0th level of recursion (the <i>while</i>-loop) should also be entered when the digit has reached the maximum value (if the maximum of a digit is 4, it would be necessary to capture that 4 too). Then a break condition is also neccessary, otherwise the <i>while</i>-loop would never terminate:</p>
+
+		<figure id="code4">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code4" class="code">
 def cartesian_product(indices, max, i):
 	while indices[i] <= max[i]:
 		if i > 0:
 			cartesian_product(indices, max, i-1)
 		if i == 0:
 			# Do something with the indices.
+			print(indices)
 		if indices[i] == max[i]:
 			break
-		indices[i] += 1</pre>
+		indices[i] += 1
 
-		<p>Finally the previous digits must be reset once every time the current digit is about to be increased, and this needs to be done before the previous digits are increased.</p>
+cartesian_product(indices, max, 1)</pre>
+		</div>
+		<caption>Table 4.4: Code for entering the <i>while</i>-loop when <i>indices[i] == max[i]</i> is added.</caption>
+		<br/>
+		<div class="copy" id="code4-copy">Copy code</div>
+		<script>
+			(function() {
+				var copy = document.getElementById("code4-copy");
+				var code = document.getElementById("code4");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
 
-		<pre>
+		<p>Even when the 0th digit has reached its maximum, the body of the <i>while</i>-loop will be entered and <i>indices</i> will be printed using <i>print()</i>. This time <i>indices</i> will be printed every time that any digit is incremented.</p>
+
+		<p>Finally the previous digits must be reset once every time the current digit is about to be increased (in order to yield all the combinations), and this needs to be done before the previous digits are increased.</p>
+
+		<figure id="table5">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code5" class="code">
 def cartesian_product(indices, max, i):
 	while indices[i] <= max[i]:
 		for k in range(0, i):
@@ -455,13 +563,35 @@ def cartesian_product(indices, max, i):
 			cartesian_product(indices, max, i-1)
 		if i == 0:
 			# Do something with the indices.
+			print(indices)
 		if indices[i] == max[i]:
 			break
-		indices[i] += 1</pre>
+		indices[i] += 1
 
-		<p>The final code looks like below, when a starting function has been defined too. It takes a callback function so that you can do what you want with the indices once a new combination is calculated. It comes with a sample of how it can be used with four lists of digits from 1 through 4.</p>
-<figure id="table1">
-<pre>
+cartesian_product(indices, max, 1)</pre>
+		</div>
+		<caption>Table 4.5: The Cartesian product algorithm with the reset code added in.</caption>
+		<br/>
+		<div class="copy" id="code5-copy">Copy code</div>
+		<script>
+			(function() {
+				var copy = document.getElementById("code5-copy");
+				var code = document.getElementById("code5");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+		<p>Now you can run the above code and set the starting value of <i>i</i> to how many number of positions you want to complete. Since the length of <i>indices</i> is 3, it should be set to 3 so that combinations are also created for the last two positions.</p>
+
+		<p>A more practical code looks like below, where a starting function has been defined. It takes a callback function so that you can do what you want with the indices once a new combination is calculated. It comes with a sample of how it can be used with four lists of digits from 1 through 4.</p>
+
+		<figure id="table6">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code6" class="code">
 def cartesian_product(data, callback):
 	max_lengths = [len(x)-1 for x in data]
 	indices = [0 for x in data]
@@ -484,11 +614,22 @@ def _cartesian_product(indices, max_lengths, i, callback):
 if __name__ == '__main__':
 	data = [[1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]]
 	cartesian_product(data, lambda x: print([data[i][x[i]] for i in range(len(data))]))</pre>
+		</div>
+		<caption>Table 4.6: The Cartesian product algoritm with a few conveniences.</caption>
+		<br/>
+		<div class="copy" id="code5-copy">Copy code</div>
+		<script>
+			(function() {
+				var copy = document.getElementById("code5-copy");
+				var code = document.getElementById("code5");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
 
-<caption>Table 4.1: The cartesian product algoritm.</caption>
-</figure>
-
-		<h1 id="doyouhavequestions">5. Do you have questions about this writeup?</h1>
+		<h2 id="doyouhavequestions">5. Do you have questions about this writeup?</h2>
 
 		<p>Please send your questions to <a href="mailto:nblomqvist834@gmail.com">nblomqvist834@gmail.com</a>.</p>
 
