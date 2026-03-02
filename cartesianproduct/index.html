@@ -45,6 +45,7 @@
 		<p>Timeline:</p>
 		<ul>
 			<li>2026-02-26: First published.</li>
+			<li>2026-03-02: Added Pythonic code of the algorithm.</li>
 		</ul>
 
 		<p>The final program can be downloaded <a href="./cartesianproduct.py">here</a>.
@@ -79,6 +80,7 @@
         	<li><a href="#code4">4.4 Code for entering the <i>while</i>-loop when <i>indices[i] == max[i]</i> is added</a></li>
         	<li><a href="#code5">4.5 The Cartesian product algorithm with the reset code added in</a></li>
         	<li><a href="#code6">4.6 The Cartesian product algoritm with a few conveniences</a></li>
+		<li><a href="#code7">4.7 The Cartesian product algoritm also showcasing Python features.</a></li>
         </ol>
 
         <h2>1. Forewords</h2>
@@ -623,6 +625,52 @@ if __name__ == '__main__':
 			(function() {
 				var copy = document.getElementById("code6-copy");
 				var code = document.getElementById("code6");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+		<p>The code can be made more Pythonic (include characteristic features of the programming language) by removing the callback function and instead use the <i>yield</i> keyword. See the code snippet below. Changes to the code can be seen on lines 3, 11, 13. Note that the signature of the functions have been changed to include <i>data</i> and that the <i>callback</i> parameter has been removed. Note also that the use of the function looks like calling for example <i>range()</i> (a built-in Python function), in that the results of the function can be looped over in a for-loop.</p>
+
+		<p>Thanks to Pontus Ekberg (<a href="mailto:pontus.ekberg@it.uu.se">pontus.ekberg@it.uu.se</a>) for the tips how to make the code more Pythonic.</p>
+
+		<figure id="table7">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code7" class="code">
+def cartesian_product(data):
+	max_lengths = [len(x)-1 for x in data]
+	indices = [0 for x in data]
+	yield from _cartesian_product(data, indices, max_lengths, len(data)-1)
+
+
+def _cartesian_product(data, indices, max_lengths, i):
+	while indices[i] <= max_lengths[i]:
+		for k in range(0, i):
+			indices[k] = 0
+		if i > 0:
+			yield from _cartesian_product(data, indices, max_lengths, i-1)
+		if i == 0:
+			yield [data[i][j] for i, j in enumerate(indices)]
+		if indices[i] == max_lengths[i]:
+			break
+		indices[i] += 1
+
+
+if __name__ == '__main__':
+	data = [[1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]]
+	for x in cartesian_product(data):
+		print(x)</pre>
+		</div>
+		<caption>Table 4.7: The Cartesian product algoritm also showcasing Python features.</caption>
+		<br/>
+		<btn class="copy" id="code7-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code7-copy");
+				var code = document.getElementById("code7");
 				copy.addEventListener("click", function(e) {
 					navigator.clipboard.writeText(code.innerText);
 				});
