@@ -17,14 +17,6 @@ def find_successor(arr, i):
     return i
 
 
-def find_max(d):
-    max = 0
-    for i in range(0, len(d)):
-        if d[i] > d[max]:
-            max = i
-    return max
-
-
 def sort_from(arr, start):
     i = len(arr)-1
     while i >= start:
