@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <assert.h>
 #include <stdbool.h>
 
@@ -61,39 +62,35 @@ bool assert_array_equals(int *arr1, int *arr2, int len) {
 }
 
 void p_callback(int *arr, int arr_len) {
-	print_array(arr, arr_len);
+	; // Print the array, for example.
 }
 
 void run_tests() {
-	printf("Finding max of ");
+	printf("testing find_max() ...");
 	int arr1[11] = {1, 2, 3, 4, 11, 10, 9, 8, 7, 6, 5};
-	print_array(arr1, 11);
 	int max = find_max(arr1, 4, 11);
-	printf("Found max: %d\n", max);
 	assert(max == 4);
+	printf("ok!\n");
 
-	printf("Sorting array ");
+	printf("testing sort_from() ...");
 	int arr2[11] = {1, 2, 3, 4, 11, 10, 9, 8, 7, 6, 5};
-	print_array(arr2, 11);
 	sort_from(arr2, 11, 5);
 	int arr_sorted[11] = {1, 2, 3, 4, 11, 5, 6, 7, 8, 9, 10};
-	printf("Sorted array (from 5): ");
-	print_array(arr2, 11);
 	assert(assert_array_equals(arr2, arr_sorted, 10)); 
+	printf("ok!\n");
 
-	printf("Finding successor of 5 in");
+	printf("testing find_successor() ...");
 	int arr3[11] = {1, 2, 3, 4, 11, 10, 9, 8, 7, 6, 5};
-	print_array(arr3, 11);
 	int s = find_successor(arr3, 6, 11, 10);
-	printf("Found successor at %d\n", s);
 	assert(s == 9);
+	printf("ok!\n");
 }
 
 int main()
 {
 	// Uncomment to run tests.
-	//run_tests();
-	//exit();
+	// run_tests();
+	// exit();
 
 	int arr[4] = {0, 1, 2, 3};
 	permutations(arr, 4, 0, 3);
