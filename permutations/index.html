@@ -237,11 +237,11 @@ for _ in range(0, 4):
 		</script>
 		</figure>
 
-		<p>As in the example with the machine instructions, one needs to operate on the smaller subarray. It can be done with a recursive function call. Operating on a smaller subarray is only done if the current span plus one (<i>end+1-start</i>) of the array is larger than one. It can be explained with the fact that when the subarray is one, there is nothing to do.
+		<p>As in the example with the machine instructions, one needs to operate on the smaller subarray. It can be done with a recursive function call. Operating on a smaller subarray is only done if the current span plus one (<i>end+1-start</i>) of the array is larger than one, or in other terms if the current array spans has more than two elements. It is not necessary to do anything when the next subarray contains one element.</p>
 
-		<p>Every time that one makes a swap, the array needs to be saved, and so this happens as long as the length of the subarray is equal to two (the last two numbers). The length of a subarray is 2 for example if <i>end</i> is 3 and <i>start</i> is 2. The state of the array should not be saved when the subarray is longer than that, because that is when a longer distance swap is made (and a subarray is sorted) before the state is saved again.</p>
+		<p>Every time that one makes a swap, the array needs to be saved, and so this happens as long as the length of the subarray is equal to two (the last two numbers). The length of a subarray is 2 for example if <i>end</i> is 3 and <i>start</i> is 2. The state of the array should not be saved when the subarray is longer than that, because that is when a longer distance swap is made (and a subarray is sorted).</p>
 
-		<p>This time one must also generalize the condition of the <i>for</i>-loop, so that it iterates over the length of the subarray.</p>
+		<p>This time one must also generalize the condition of the <i>for</i>-loop, so that it iterates over the length of the subarray, so that it works for each of the subarrays [1, 2, 3] and [2, 3], not only on the top level [0, 1, 2, 3].</p>
 
 		<figure>
 		<div class="code-block">
@@ -315,7 +315,7 @@ for p in permutations(arr, 0, 3): print(p)
 
 		<p>The functions for finding the successor, swapping and sorting starting from a given index can be seen below. The functions <i>find_successor()</i> and <i>sort_from()</i> requires some explanation.</p>
 
-		<p>In <i>find_successor()</i>, in each iteration, <i>j</i> is incremented by one and added to an increasing indexing number <i>k</i>. If the <i>number at k+1</i> is equal to the number that the successor is sought for, the number at <i>k</i> must be the successor. <i>find_successor()</i> will iterate through the array for a maximum of <i>the maximum number of the array * 2</i>. As an example, if the array is [0, 3, 11, 10, 2] and the successor for 3 is sought, <i>j</i> will be incremented to 7 before 10 is found as the successor. Once <i>j</i> has reached the limit and the array has been iterated through, the largest number has been considered.</p>
+		<p>In <i>find_successor()</i>, in each iteration, <i>j</i> is incremented by one and added to an increasing indexing number <i>k</i>. If the <i>number at k+1</i> is equal to the number that the successor is sought for, the number at <i>k</i> must be the successor. <i>find_successor()</i> will iterate through the array for a maximum of <i>the maximum number of the array * 2</i>. As an example, if the array is [0, 3, 11, 10, 2] and the successor for 3 is sought, <i>j</i> will be incremented to 7 before 10 is found as the successor. Note that if the limit was lower, a larger number before the successor could be "in the way", breaking the loop. If the limit was higher, extra iterations would result without use. Once <i>j</i> has reached the limit and the array has been iterated through, the largest number has been considered (unless a successor is already found).</p>
 
 		<p><i>sort_from()</i> is a simple sorting algorithm that will find the maximum number of the array and place it last. For each iteration when <i>i</i> is decreased, the next largest number will be placed before the larger one that is placed after.</p>
 
@@ -493,7 +493,7 @@ int main() {
 
 		<h2 id="speedcomparisons">6. Speed comparisons</h2>
 
-		<p>One can compare the implementations in this article with Python's own <i>itertools.permutations()</i>. The variant found in <i>itertools</i> is a recursive variant whose equivalent in Python can be found in the <a href="https://docs.python.org/3/library/itertools.html#itertools.permutations">Python documentation</a>.</p>
+		<p>One can compare the implementations in this article with Python's own <i>itertools.permutations()</i>. The variant found in <i>itertools</i> is recursive whose equivalent in Python can be found in the <a href="https://docs.python.org/3/library/itertools.html#itertools.permutations">Python documentation</a>.</p>
 
 		<figure id="table1">
 		<table cellpadding=0 cellspacing=0>
@@ -524,7 +524,7 @@ int main() {
 
 		<h2 id="inefficienesandadvantages">7. Inefficiencies and advantages</h2>
 
-		<p>The advantage with the method presented in this article is that the output is always in lexicographic order, which can be considered human-friendly. Inefficiencies of this method are that (1) permutations that are valid are discarded (see the use of the <code>peek</code> operations), and (2) regarding the implementation, the longer the input becomes, the more important becomes the efficiency of the sorting algorithm used and the method for finding the successor.</p>
+		<p>The advantage with the method presented in this article is that the output is always in lexicographic order. Inefficiencies of this method are that (1) permutations that are valid are discarded (see the use of the <code>peek</code> operations), and (2) regarding the implementation, the longer the input becomes, the more important becomes the efficiency of the sorting algorithm used and the method for finding the successor.</p>
 
 		<h2 id="doyouhavequestions">8. Do you have questions about this writeup?</h2>
 
