@@ -74,7 +74,7 @@
         <p>List of figures</p>
 
         <ol>
-        	<li><a href="#figure1">3.1: A machine creating the permutations of [1, 2, 3, 4]</a></li>
+        	<li><a href="#figure1">3.1: A machine creating the permutations of [0, 1, 2, 3]</a></li>
         </ol>
 
 	<p>List of tables</p>
@@ -171,7 +171,7 @@
 
         <p>From looking at the permutations in the counter, it may be possible to find out what steps can be taken to reach the next permutation.</p>
 
-	<p>Like I did in the article <a href="../cartesianproduct">An algorithm for the Cartesian product</a>, I will define a simple machine again, with a few instructions, in order to illustrate what the steps can be to produce the next permutation. The machine works on a list of indices each of which represent one element from each list of elements.</p>
+	<p>Like I did in the article <a href="../cartesianproduct">An algorithm for the Cartesian product</a>, I will define a simple machine again, with a few instructions, in order to illustrate what the steps can be to produce the next permutation. The machine works on a list of indices each of which represent one element from each list of elements ([0, 1, 2, 3).</p>
 
 	<p>The machine has the instructions <code>save</code> which saves the current state of the indices somewhere so that I can do something with it later. <code>swap</code> swaps the two digits at the positions given as arguments. <code>sort</code> sorts the digits starting at the position given as the argument. <code>peek</code> displays the current state of the indices. When peek is used, a <code>*</code> is affixed to the indices.</p>
 
@@ -212,9 +212,9 @@ save     = 1 3 2 0
 
         <h2 id="programmingasolution">4. Programming the solution</h2>
 
-	<p>Let's start by doing something at the top level of the array. The left most number will take four different values, while something is done with the rest of the array.</p>
+	<p>Let's start by doing something at the top level of the array. The left most number will take four different values, while something is done with the rest of the array, so let's iterate over it four times.</p>
 
-		<figure id="code1">
+		<figure>
 		<div class="code-block">
 		<pre class="line-numbers"></pre>
 		<pre id="code1" class="code">
@@ -241,7 +241,9 @@ for _ in range(0, 4):
 
 		<p>Every time that one makes a swap, the array needs to be saved, and so this happens as long as the length of the subarray is equal to two (the last two numbers). The length of a subarray is 2 for example if <i>end</i> is 3 and <i>start</i> is 2. The state of the array should not be saved when the subarray is longer than that, because that is when a longer distance swap is made (and a subarray is sorted) before the state is saved again.</p>
 
-		<figure id="code2">
+		<p>This time one must also generalize the condition of the <i>for</i>-loop, so that it iterates over the length of the subarray.</p>
+
+		<figure>
 		<div class="code-block">
 		<pre class="line-numbers"></pre>
 		<pre id="code2" class="code">
@@ -276,7 +278,7 @@ for p in permutations(arr, 0, 3): print(p)
 
 		<p>Now one should add code for making the swaps and sorting the subarray. As in the example with the machine in <a href="#figure1">Figure 3.1</a>, the successor to the first number of the <i>i</i>th level of the array must be swapped with each other. After that, the <i>i+1</i>th level must be sorted.</p>
 
-		<figure id="code3">
+		<figure>
 		<div class="code-block">
 		<pre class="line-numbers"></pre>
 		<pre id="code3" class="code">
@@ -317,7 +319,7 @@ for p in permutations(arr, 0, 3): print(p)
 
 		<p><i>sort_from()</i> is a simple sorting algorithm that will find the maximum number of the array and place it last. For each iteration when <i>i</i> is decreased, the next largest number will be placed before the larger one that is placed after.</p>
 
-		<figure id="code4">
+		<figure>
 		<div class="code-block">
 		<pre class="line-numbers"></pre>
 		<pre id="code4" class="code">
@@ -362,7 +364,7 @@ def sort_from(arr, start):
 
 		<p>One can make the code more user-friendly by allowing the data to be used as input:</p>
 
-		<figure id="code6">
+		<figure>
 		<div class="code-block">
 		<pre class="line-numbers"></pre>
 		<pre id="code6" class="code">
@@ -409,7 +411,7 @@ if __name__ == "__main__":
 
 		<p>Because the Python implementation of the algorithm is slow (see <a href="#speedcomparisons">Speed comparisons</a>), I decided to implement it in C for a speedup.</p>
 
-		<figure id="code5">
+		<figure>
 		<div class="code-block">
 		<pre class="line-numbers"></pre>
 		<pre id="code5" class="code">
