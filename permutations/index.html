@@ -1,0 +1,532 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Nils Blomqvist's web page</title>
+		<link rel="stylesheet" href="../style.css?v=202603071835">
+		<script>
+
+			function strip_ending_pre_whitespace(pre) {
+				var i = pre.innerText.length-1;
+				while (pre.innerText[i] == "\t" || pre.innerText[i] == " " || pre.innerText[i] == "\n") {
+					pre.innerText = pre.innerText.substring(0, i);
+					i--;
+				}
+			}
+
+			function count_newlines(pre) {
+				var count = 0;
+				for (var i = 0; i < pre.innerText.length; i++)
+					if (pre.innerText[i] == "\n") count++;
+				return count;
+			}
+
+			function fill_line_numbers(pre, n) {
+				for (var i = 0; i < n; i++)
+					pre.innerText += i + "\n";
+			}
+
+			function number_code_blocks(code_blocks) {
+				for (var i = 0; i < code_blocks.length; i++) {
+					var lines = code_blocks[i].children[0];
+					var code = code_blocks[i].children[1];
+					var no_lines = 0;
+					for (var j = 0; j < code.innerText.length; j++) {
+						if (code.innerText[j] == "\n") {
+							lines.innerText += no_lines + "\n";
+							no_lines++;
+						}
+					}
+					lines.innerText += no_lines + "\n";
+				}
+
+			}
+
+			document.addEventListener("DOMContentLoaded",  function() {
+					var codeblocks = document.querySelectorAll(".code-block");
+					for (var i = 0; i < codeblocks.length; i++)
+						strip_ending_pre_whitespace(codeblocks[i].querySelectorAll("pre")[1]);
+					number_code_blocks(codeblocks);
+			});
+		</script>
+	</head>
+	<body>
+		<h1><a href="../">< home</a> A permutations algorithm</h1>
+
+		<p>Timeline:</p>
+		<ul>
+			<li>2026-03-12: First published.</li>
+		</ul>
+
+		<p>The final program can be downloaded <a href="./permutations.py">here (Python version)</a> and <a href="./permutations.c">here (C version)</a>.</p>
+
+		<p>Table of Contents</p>
+		<ol>
+			<li><a href="#forewords">1. Forewords</a></li>
+			<li><a href="#whatarepermutations">2. What are permutations?</li>
+			<li><a href="#examples">3. Finding the pattern</a></li>
+			<li><a href="#programmingasolution">4. Programming a solution</a></li>
+			<li><a href="#arewriteinc">5. A re-write in C</a></li>
+			<li><a href="#speedcomparisons">6. Speed comparisons</a></li>
+			<li><a href="#inefficienesandadvantages">7. Inefficiencies and advantages</a></li>
+			<li><a href="#doyouhavequestions">8. Do you have questions about this writeup?</a></li>
+		</ol>
+
+        <p>List of figures</p>
+
+        <ol>
+        	<li><a href="#figure1">3.1: A machine creating the permutations of [1, 2, 3, 4]</a></li>
+        </ol>
+
+	<p>List of tables</p>
+
+	<ol>
+        	<li><a href="#table1">6.1: Speed comparisons of different algorithms and implementations</a></li>
+	</ol>
+
+        <p>List of interactive tools</p>
+
+        <ol>
+        	<li><a href="#tool1">2.1: Permutations counter</a></li>
+        </ol>
+
+        <p>List of programming code</p>
+
+        <ol>
+        	<li><a href="#code1">4.1 Starting to write the code for the permutations algorithm</a></li>
+        	<li><a href="#code2">4.2 Adding to the code for computing permutations</a></li>
+        	<li><a href="#code3">4.3 Adding code to (completing) the permutations algorithm</a></li>
+		<li><a href="#code4">4.4 Additional functions used in the permutations algorithm</a></li>
+		<li><a href="#code6">4.5: Making the algorithm more user-friendly</a></li>
+        	<li><a href="#code5">5.1 A rewrite of the Python implementation in C</a></li>
+        </ol>
+
+        <h2>1. Forewords</h2>
+
+	<p>I received a challenge to also tackle permutations, once I had completed an algorithm for the Cartesian product (<a href="../cartesianproduct">read more</a>.</p>
+
+        <h2>2. What are permutations?</h2>
+
+        <p>Permutations of a sequence is when you place all elements in all possible places. All elements must have occupied each position. Whenever two elements switch places, a new permutation is yielded. (Is permutations similar to products, and if so, how?)</p>
+
+        <p></p>
+
+        <p>As an illustration, below is a counter that you can use interactively. With the <i>next</i> and <i>previous</i> buttons you can move to the next or previous permutation of the sequence [1, 2, 3, 4]. This counter uses the results from the <i>permutations()</i> algorithm that is presented later. The number of permutations is 4 x 3 x 2 x 1 = 24. It can be explained with the fact that for the first slot, you have four digits to choose from. In the next slot, you have three digits to choose from, and so on, until you only have one digit left to choose from when you reach the last slot.</p>
+
+        <figure id="tool1">
+        <div style="font-family:monospace;">
+        	<span style="padding:5px;font-size:16px;display:inline-block;margin-bottom:5px;border:1px solid;" id="counter"></span>
+        	<button id="next">next</button>
+        	<button id="prev">previous</button>
+        </div>
+
+        <script>
+        	var states = [
+			[0, 1, 2, 3],
+			[0, 1, 3, 2],
+			[0, 2, 1, 3],
+			[0, 2, 3, 1],
+			[0, 3, 1, 2],
+			[0, 3, 2, 1],
+			[1, 0, 2, 3],
+			[1, 0, 3, 2],
+			[1, 2, 0, 3],
+			[1, 2, 3, 0],
+			[1, 3, 0, 2],
+			[1, 3, 2, 0],
+			[2, 0, 1, 3],
+			[2, 0, 3, 1],
+			[2, 1, 0, 3],
+			[2, 1, 3, 0],
+			[2, 3, 0, 1],
+			[2, 3, 1, 0],
+			[3, 0, 1, 2],
+			[3, 0, 2, 1],
+			[3, 1, 0, 2],
+			[3, 1, 2, 0],
+			[3, 2, 0, 1],
+			[3, 2, 1, 0]
+        	];
+
+        var state = 0;
+        var counter = document.getElementById("counter");
+        counter.innerText = states[state];
+        
+        var next = document.getElementById("next");
+        var prev = document.getElementById("prev");
+        next.addEventListener("click", function(e) {
+        	if (state == states.length-1) return;
+        	state++;
+        	counter.innerText = states[state]
+        });
+        prev.addEventListener("click", function(e) {
+        	if (state == 0) return;
+        	state--;
+        	counter.innerText = states[state]
+        });
+        </script>
+        <caption>Interactive tool 2.1: Try to increment the counter. You can see what the next permutation of [1, 2, 3, 4] looks like.</caption>
+    	</figure>
+
+        <h2 id="#examples">3. Finding the pattern</h2>
+
+        <p>From looking at the permutations in the counter, it may be possible to find out what steps can be taken to reach the next permutation.</p>
+
+	<p>Like I did in the article <a href="../cartesianproduct">An algorithm for the Cartesian product</a>, I will define a simple machine again, with a few instructions, in order to illustrate what the steps can be to produce the next permutation. The machine works on a list of indices each of which represent one element from each list of elements.</p>
+
+	<p>The machine has the instructions <code>save</code> which saves the current state of the indices somewhere so that I can do something with it later. <code>swap</code> swaps the two digits at the positions given as arguments. <code>sort</code> sorts the digits starting at the position given as the argument. <code>peek</code> displays the current state of the indices. When peek is used, a <code>*</code> is affixed to the indices.</p>
+
+        <figure id="figure1">
+        <pre>
+save     = 0 1 2 3
+swap 2 3     
+save     = 0 1 3 2
+swap 0 3
+peek     = 0 2 3 1*
+sort 2
+save     = 0 2 1 3
+swap 2 3
+save     = 0 2 3 1
+swap 1 2
+peek     = 0 3 2 1*
+sort 2
+save     = 0 3 1 2
+swap 2 3
+save     = 0 3 2 1
+swap 0 3
+peek     = 1 3 2 0*
+sort 1
+save     = 1 3 0 2
+swap 2 3
+save     = 1 3 2 0
+...</pre>
+<caption>Figure 3.1: A machine creating the permutations of [0, 1, 2, 3].</caption>
+</figure>
+
+<p>There are some interesting things going on. One is that the state is saved before and after a swap, and this happens the same number of times that is equal to the length of the subarray. So the state of the subarray [1, 2, 3] is saved before and after each swap, and this is done for three times. Likewise the subarray [2, 3] is saved two times, one for each swap.</p>
+
+	<p>Another is that when a subarray has been swapped enough times, as in the case of [3, 4] (one time), the digit in the slot before that needs to be swapped with the next greater digit (the successor). It must be in the subarray to the right of that digit.</p>
+
+	<p>Another is that, for this method, the subarray where the swap is made must be sorted after each swap.</p>
+
+	<p>Another is that every time one goes "back" to a previous slot and makes a swap, one must once again go forward to the subarray to the right and perform the same loop again: swap, sort.</p>
+
+        <h2 id="programmingasolution">4. Programming the solution</h2>
+
+	<p>Let's start by doing something at the top level of the array. The left most number will take four different values, while something is done with the rest of the array.</p>
+
+		<figure id="code1">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code1" class="code">
+arr = [0, 1, 2, 3]
+
+for _ in range(0, 4):
+	# Do something at the 0th level of the array.</pre>
+		</div>
+		<caption>Table 4.1: Starting to write the code for the permutations algorithm.</caption>
+		<br/>
+		<btn class="copy" id="code1-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code1-copy");
+				var code = document.getElementById("code1");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+		<p>As in the example with the machine instructions, one needs to operate on the smaller subarray. It can be done with a recursive function call. Operating on a smaller subarray is only done if the current span plus one (<i>end+1-start</i>) of the array is larger than one. It can be explained with the fact that when the subarray is one, there is nothing to do.
+
+		<p>Every time that one makes a swap, the array needs to be saved, and so this happens as long as the length of the subarray is equal to two (the last two numbers). The length of a subarray is 2 for example if <i>end</i> is 3 and <i>start</i> is 2. The state of the array should not be saved when the subarray is longer than that, because that is when a longer distance swap is made (and a subarray is sorted) before the state is saved again.</p>
+
+		<figure id="code2">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code2" class="code">
+arr = [0, 1, 2, 3]
+
+def permutations(arr, start, end):
+	for _ in range(0, end+1-start):
+		if (end-start) == 1:
+			yield arr
+
+		if (end+1-start) > 1:
+			yield from permutations(arr, start+1, end)
+
+for p in permutations(arr, 0, 3): print(p)
+		</pre>
+		</div>
+		<caption>Table 4.2: Adding to the code for computing permutations.</caption>
+		<br/>
+		<btn class="copy" id="code2-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code2-copy");
+				var code = document.getElementById("code2");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+		<p>The code is not doing anything useful yet, just running the top loop for each level of the array (<i>0&ndash;end</i>, <i>1&ndash;end</i>, ...), in total yielding 24 copies of the array (4x3x2x1 times).</p>
+
+		<p>Now one should add code for making the swaps and sorting the subarray. As in the example with the machine in <a href="#figure1">Figure 3.1</a>, the successor to the first number of the <i>i</i>th level of the array must be swapped with each other. After that, the <i>i+1</i>th level must be sorted.</p>
+
+		<figure id="code3">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code3" class="code">
+arr = [0, 1, 2, 3]
+
+def permutations(arr, start, end):
+	for _ in range(0, end+1-start):
+		if (end-start) == 1:
+			yield arr
+
+		if (end+1-start) > 1:
+			yield from permutations(arr, start+1, end)
+
+		s = find_successor(d[start:], 0)
+		swap(d, start+s, start)
+		sort_from(d, start+1)
+
+for p in permutations(arr, 0, 3): print(p)
+		</pre>
+		</div>
+		<caption>Table 4.3: Adding code to (completing) the permutations algorithm.</caption>
+		<br/>
+		<btn class="copy" id="code3-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code3-copy");
+				var code = document.getElementById("code3");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+		<p>The functions for finding the successor, swapping and sorting starting from a given index can be seen below. The functions <i>find_successor()</i> and <i>sort_from()</i> requires some explanation.</p>
+
+		<p>In <i>find_successor()</i>, in each iteration, <i>j</i> is incremented by one and added to an increasing indexing number <i>k</i>. If the <i>number at k+1</i> is equal to the number that the successor is sought for, the number at <i>k</i> must be the successor. <i>find_successor()</i> will iterate through the array for a maximum of <i>the maximum number of the array * 2</i>. As an example, if the array is [0, 3, 11, 10, 2] and the successor for 3 is sought, <i>j</i> will be incremented to 7 before 10 is found as the successor. Once <i>j</i> has reached the limit and the array has been iterated through, the largest number has been considered.</p>
+
+		<p><i>sort_from()</i> is a simple sorting algorithm that will find the maximum number of the array and place it last. For each iteration when <i>i</i> is decreased, the next largest number will be placed before the larger one that is placed after.</p>
+
+		<figure id="code4">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code4" class="code">
+def swap(arr, i, j):
+    copy = arr[i]
+    arr[i] = arr[j]
+    arr[j] = copy
+
+def find_successor(arr, i):
+    j = 1
+    lim = max(arr) * 2
+    while True:
+        for k in range(0, len(arr)):
+            if arr[k] == arr[i]+j:
+                return k
+        j += 1
+        if j > lim:
+            break
+    return i
+
+def sort_from(arr, start):
+    i = len(arr)-1
+    while i >= start:
+        m = max(arr[start:i+1])
+        swap(arr, i, start+arr[start:i+1].index(m))
+        i -= 1
+		</pre>
+		</div>
+		<caption>Table 4.4: Additional functions used in the permutations algorithm.</caption>
+		<br/>
+		<btn class="copy" id="code4-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code4-copy");
+				var code = document.getElementById("code4");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+		<p>One can make the code more user-friendly by allowing the data to be used as input:</p>
+
+		<figure id="code6">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code6" class="code">
+def permutations(data):
+    start = 0
+    end = len(data)-1
+    indices = [x for x in range(0, end+1)]
+    yield from _permutations(data, indices, start, end)
+
+def _permutations(data, indices, start, end):
+    for _ in range(0, end+1-start):
+        if (end-start == 1):
+            yield [data[i] for i in indices]
+
+        if (end+1-start) > 1:
+            yield from _permutations(data, indices, start+1, end)
+
+        s = find_successor(indices[start:], 0)
+        swap(indices, start+s, start)
+        sort_from(indices, start+1)
+
+if __name__ == "__main__":
+	data = ["a", "b", "c", "d"]
+	for p in permutations(data):
+		print(p)
+		</pre>
+		</div>
+		<caption>Table 4.5: Making the algorithm more user-friendly.</caption>
+		<br/>
+		<btn class="copy" id="code6-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code6-copy");
+				var code = document.getElementById("code6");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+
+		<h2 id="arewriteinc">5. A re-write in C</h2>
+
+		<p>Because the Python implementation of the algorithm is slow (see <a href="#speedcomparisons">Speed comparisons</a>), I decided to implement it in C for a speedup.</p>
+
+		<figure id="code5">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code5" class="code">
+void swap(int *arr, int i, int j) {
+	int copy = arr[i];
+	arr[i] = arr[j];
+	arr[j] = copy;
+}
+
+int find_max(int arr[], int start, int stop) {
+	int max = start;
+	for (int i = start; i < stop; i++)
+		if (arr[i] > arr[max])
+			max = i;
+	return max;
+}
+
+void sort_from(int arr[], int arr_len, int start) {
+	int i = arr_len-1;
+	while (i >= start) {
+		int max = find_max(arr, start, i+1);
+		swap(arr, i, max);
+		i--;
+	}
+}
+
+int find_successor(int *arr, int start, int arr_len, int i) {
+	int lim = arr[find_max(arr, start, arr_len)] * 2;
+	int j = 1;
+	while (1) {
+		for (int k = start; k < arr_len; k++)
+			if (arr[k] == arr[i]+j)
+				return k;
+		j++;
+		if (j > lim) break;
+	}
+	return i;
+}
+
+void p_callback(int *arr, int arr_len);
+
+void permutations(int *arr, int arr_len, int start, int end) {
+	for (int z = 0; z < end+1-start; z++) {
+		if (end-start == 1)
+			p_callback(arr, arr_len);
+		
+		if (end-start > 1)
+			permutations(arr, arr_len, start+1, end);
+
+		int s = find_successor(arr, start, arr_len, start);
+		swap(arr, s, start);
+		sort_from(arr, arr_len, start+1);
+	}
+}
+
+void p_callback(int *arr, int arr_len) {
+	;  // Print the array, for example.
+}
+
+int main() {
+	int arr[4] = {0, 1, 2, 3};
+	permutations(arr, 4, 0, 3);
+}
+		</pre>
+		</div>
+		<caption>Table 5.1: A rewrite of the Python implementation in C.</caption>
+		<br/>
+		<btn class="copy" id="code5-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code5-copy");
+				var code = document.getElementById("code5");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+		<h2 id="speedcomparisons">6. Speed comparisons</h2>
+
+		<p>One can compare the implementations in this article with Python's own <i>itertools.permutations()</i>. The variant found in <i>itertools</i> is a recursive variant whose equivalent in Python can be found in the <a href="https://docs.python.org/3/library/itertools.html#itertools.permutations">Python documentation</a>.</p>
+
+		<figure id="table1">
+		<table cellpadding=0 cellspacing=0>
+			<tr>
+				<th>name</th>
+				<th>n</th>
+				<th>time (s)</th>
+			</tr>
+			<tr>
+				<td>this article's algorithm</td>
+				<td>10</td>
+				<td>28</td>
+			</tr>
+			<tr>
+				<td>itertools.permutations</td>
+				<td>11</td>
+				<td>7-8</td>
+			</tr>
+			<tr>
+				<td>this article's algorithm (C)</td>
+				<td>11</td>
+				<td>3</td>
+			</tr>
+
+		</table>
+		<caption>Table 6.1: Speed comparisons of different algorithms and implementations</caption>
+		</figure>
+
+		<h2 id="inefficienesandadvantages">7. Inefficiencies and advantages</h2>
+
+		<p>The advantage with the method presented in this article is that the output is always in lexicographic order, which can be considered human-friendly. Inefficiencies of this method are that (1) permutations that are valid are discarded (see the use of the <code>peek</code> operations), and (2) regarding the implementation, the longer the input becomes, the more important becomes the efficiency of the sorting algorithm used and the method for finding the successor.</p>
+
+		<h2 id="doyouhavequestions">8. Do you have questions about this writeup?</h2>
+
+		<p>Please send your questions to <a href="mailto:nblomqvist834@gmail.com">nblomqvist834@gmail.com</a>.</p>
+
+	</body>
+</html>
