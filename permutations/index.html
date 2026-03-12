@@ -102,11 +102,11 @@
 
         <h2>1. Forewords</h2>
 
-	<p>I received a challenge to also tackle permutations, once I had completed an algorithm for the Cartesian product (<a href="../cartesianproduct">read more</a>.</p>
+	<p>I received a challenge to also tackle permutations, once I had completed <a href="../cartesianproduct">an algorithm for the Cartesian product</a>.</p>
 
         <h2>2. What are permutations?</h2>
 
-        <p>Permutations of a sequence is when you place all elements in all possible places. All elements must have occupied each position. Whenever two elements switch places, a new permutation is yielded. (Is permutations similar to products, and if so, how?)</p>
+        <p>Permutations of a sequence is when you place all elements in every possible position of the sequence. Whenever two elements switch places, a new permutation is yielded.</p>
 
         <p></p>
 
@@ -202,13 +202,17 @@ save     = 1 3 2 0
 <caption>Figure 3.1: A machine creating the permutations of [0, 1, 2, 3].</caption>
 </figure>
 
-<p>There are some interesting things going on. One is that the state is saved before and after a swap, and this happens the same number of times that is equal to the length of the subarray. So the state of the subarray [1, 2, 3] is saved before and after each swap, and this is done for three times. Likewise the subarray [2, 3] is saved two times, one for each swap.</p>
+<p>There are some interesting things going on:</p>
 
-	<p>Another is that when a subarray has been swapped enough times, as in the case of [3, 4] (one time), the digit in the slot before that needs to be swapped with the next greater digit (the successor). It must be in the subarray to the right of that digit.</p>
+<ol class="list">
+	<li>The state is saved before and after a swap, and this happens the same number of times that is equal to the length of the subarray. So the state of the subarray [1, 2, 3] is saved before and after each swap, and this is done for three times. Likewise the subarray [2, 3] is saved two times, one for each swap.</li>
 
-	<p>Another is that, for this method, the subarray where the swap is made must be sorted after each swap.</p>
+	<li>When a subarray has been swapped enough times, as in the case of [3, 4] (one time), the digit in the slot before that needs to be swapped with the next greater digit (the successor). It must be in the subarray to the right of that digit.</li>
 
-	<p>Another is that every time one goes "back" to a previous slot and makes a swap, one must once again go forward to the subarray to the right and perform the same loop again: swap, sort.</p>
+	<li>The subarray where the swap is made is sorted after the number before it is swapped.</li>
+
+	<li>Every time one goes "back" to a previous slot and makes a swap, one must go forward to the subarray to the right and perform the same work again.</li>
+</ol>
 
         <h2 id="programmingasolution">4. Programming the solution</h2>
 
@@ -237,11 +241,11 @@ for _ in range(0, 4):
 		</script>
 		</figure>
 
-		<p>As in the example with the machine instructions, one needs to operate on the smaller subarray. It can be done with a recursive function call. Operating on a smaller subarray is only done if the current span plus one (<i>end+1-start</i>) of the array is larger than one, or in other terms if the current array spans has more than two elements. It is not necessary to do anything when the next subarray contains one element.</p>
+		<p>As in the example with the machine instructions, one needs to operate on the smaller subarray. It can be done with a recursive function call (line 8). Operating on a smaller subarray is only done if the current span plus one (<i>end+1-start</i>) of the array is larger than one, or in other terms if the current subarray has more than two elements. It is not necessary to do anything when the next subarray contains one element.</p>
 
-		<p>Every time that one makes a swap, the array needs to be saved, and so this happens as long as the length of the subarray is equal to two (the last two numbers). The length of a subarray is 2 for example if <i>end</i> is 3 and <i>start</i> is 2. The state of the array should not be saved when the subarray is longer than that, because that is when a longer distance swap is made (and a subarray is sorted).</p>
+		<p>Every time that one makes a swap, the array needs to be saved, and so this happens as long as the length of the subarray is equal to two (the last two numbers) (line 4). The length of a subarray is 2 for example if <i>end</i> is 3 and <i>start</i> is 2. The state of the array should not be saved when the subarray is longer than that, because that is when a longer distance swap is made (and a subarray is sorted).</p>
 
-		<p>This time one must also generalize the condition of the <i>for</i>-loop, so that it iterates over the length of the subarray, so that it works for each of the subarrays [1, 2, 3] and [2, 3], not only on the top level [0, 1, 2, 3].</p>
+		<p>This time one must also generalize the condition of the <i>for</i>-loop, so that it iterates over the length of the subarray, so that it works for each of the subarrays [1, 2, 3] and [2, 3], not only on the top level [0, 1, 2, 3] (line 3).</p>
 
 		<figure>
 		<div class="code-block">
@@ -276,7 +280,7 @@ for p in permutations(arr, 0, 3): print(p)
 
 		<p>The code is not doing anything useful yet, just running the top loop for each level of the array (<i>0&ndash;end</i>, <i>1&ndash;end</i>, ...), in total yielding 24 copies of the array (4x3x2x1 times).</p>
 
-		<p>Now one should add code for making the swaps and sorting the subarray. As in the example with the machine in <a href="#figure1">Figure 3.1</a>, the successor to the first number of the <i>i</i>th level of the array must be swapped with each other. After that, the <i>i+1</i>th level must be sorted.</p>
+		<p>Now one should add code for making the swaps and sorting the subarray (see lines 10-12). As in the example with the machine in <a href="#figure1">Figure 3.1</a>, the successor to the first number of the <i>i</i>th level of the array must be swapped with each other. After that, the <i>i+1</i>th level must be sorted.</p>
 
 		<figure>
 		<div class="code-block">
@@ -315,7 +319,7 @@ for p in permutations(arr, 0, 3): print(p)
 
 		<p>The functions for finding the successor, swapping and sorting starting from a given index can be seen below. The functions <i>find_successor()</i> and <i>sort_from()</i> requires some explanation.</p>
 
-		<p>In <i>find_successor()</i>, in each iteration, <i>j</i> is incremented by one and added to an increasing indexing number <i>k</i>. If the <i>number at k+1</i> is equal to the number that the successor is sought for, the number at <i>k</i> must be the successor. <i>find_successor()</i> will iterate through the array for a maximum of <i>the maximum number of the array * 2</i>. As an example, if the array is [0, 3, 11, 10, 2] and the successor for 3 is sought, <i>j</i> will be incremented to 7 before 10 is found as the successor. Note that if the limit was lower, a larger number before the successor could be "in the way", breaking the loop. If the limit was higher, extra iterations would result without use. Once <i>j</i> has reached the limit and the array has been iterated through, the largest number has been considered (unless a successor is already found).</p>
+		<p>In <i>find_successor()</i>, in each iteration, <i>j</i> is incremented by one and added to an increasing indexing number <i>k</i> (line 10). If the <i>number at k+1</i> is equal to the number that the successor is sought for, the number at <i>k</i> must be the successor (lines 10-11). <i>find_successor()</i> will iterate through the array for a maximum of <i>the maximum number of the array * 2</i> (line 7). As an example, if the array is [0, 1, 11, 10, 2] and the successor for 3 is sought, <i>j</i> will be incremented to 7 before 10 is found as the successor. Note that if the limit was lower, a larger number before the successor could be "in the way", breaking the loop. As an example of this, consider the array [0, 11, 10] and the successor for 0. When <i>j</i> is 10 and <i>k</i> is 1, the addition of the number at <i>k</i> and <i>j</i> will reach 21. Still, <i>k=1</i> must be passed over for <i>k=2</i>. One can see that a safe limit is setting the limit to the double of the largest number, which ensures that the iteration can pass the largest number without breaking the loop.</p>
 
 		<p><i>sort_from()</i> is a simple sorting algorithm that will find the maximum number of the array and place it last. For each iteration when <i>i</i> is decreased, the next largest number will be placed before the larger one that is placed after.</p>
 
