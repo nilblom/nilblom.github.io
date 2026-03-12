@@ -56,6 +56,7 @@ def _permutations(data, indices, start, end):
         swap(indices, start+s, start)
         sort_from(indices, start+1)
             
+
 if __name__ == "__main__":
     for x in permutations(["a", "b", "c", "d"]):
         print(x)
