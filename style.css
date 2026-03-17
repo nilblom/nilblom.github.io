@@ -13,7 +13,7 @@ ol {
 }
 
 ol.list {
-	list-style: default;
+	list-style: auto;
 }
 
 td:last-child, th:last-child {
