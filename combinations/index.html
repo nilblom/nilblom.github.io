@@ -1,0 +1,380 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Nils Blomqvist's web page</title>
+		<link rel="stylesheet" href="../style.css?v=202603071835">
+		<script src="../scripts.js"></script>
+	</head>
+	<body>
+		<h1><a href="../">< home</a> A combinations algorithm</h1>
+
+		<p>Timeline:</p>
+		<ul>
+			<li>2026-03-20: First published.</li>
+		</ul>
+
+		<p>The final program can be downloaded <a href="./combinations.py">here (Python version)</a>.</p>
+
+		<p>Table of Contents</p>
+		<ol>
+			<li><a href="#forewords">1. Forewords</a></li>
+			<li><a href="#whatarecombinations">2. What are combinations?</li>
+			<li><a href="#examples">3. Finding the pattern</a></li>
+			<li><a href="#programmingasolution">4. Programming a solution</a></li>
+			<li><a href="#doyouhavequestions">5. Do you have questions about this writeup?</a></li>
+		</ol>
+
+	<p>List of tables</p>
+
+	<ol>
+		<li><a href="#figure1">2.1: Combinations of different sizes from the set {1, 2, 3, 4}</a></li>
+	</ol>
+        <p>List of figures</p>
+
+        <ol>
+        	<li><a href="#figure2">3.1: A machine creating the 2-combinations and 3-combinations of of {0, 1, 2, 3}</a></li>
+        	<li><a href="#figure3">5.1: Comparing actual output and the imagined algorithm</a></li>
+        </ol>
+
+        <p>List of programming code</p>
+
+        <ol>
+        	<li><a href="#code1">4.1 Starting to write the base case for the combinations algorithm</a></li>
+        	<li><a href="#code2">4.2 Adding the last bits of code for the combinations algorithm</a></li>
+        	<li><a href="#code3">4.3 Making the code more Pythonic by turning the function into an iterator</a></li>
+        </ol>
+
+        <h2 id="forewords">1. Forewords</h2>
+
+	<p>I received a challenge to also tackle permutations and combinations, once I had completed <a href="../cartesianproduct">A Cartesian product algorithm</a>. This article is about an algorithm that produces combinations.</p>
+
+        <h2 id="whatarecombinations">2. What are combinations?</h2>
+
+	<p>Combinations of a set are the (unordered) combinations of the different elements. As an example, the 2-combinations of the set {1, 2, 3} are {1, 2}, {1, 3}, {2, 3}. The 3-combination is {1, 2, 3} &ndash; there is only one way to combine the three elements in pieces of three.</p>
+
+        <p></p>
+
+	<p>As an illustration, below is a chart of the possible 2-combinations, 3-combinations and 4-combinations of {1, 2, 3, 4}. The curly braces shows that it is a set &ndash; elements that are unique. The possible combinations number <i>n!/k!(n-k)!</i> so for 2-combinations there are <i>4!/2!(4-2)!=6</i> and for 3-combinations there are <i>4!/3!(4-3)!=4</i> and for 4-combinations there are only <i>4!/4!(4-4)!=1</i>.</p>
+
+        <figure id="figure1">
+        <table cellpadding=0 cellspacing=0>
+		<tr>
+			<th>1-combinations</th>
+			<th>2-combinations</th>
+			<th>3-combinations</th>
+			<th>4-combinations</th>
+		</tr>
+		<tr>
+			<td>{1}</td>
+			<td>{1, 2}</td>
+			<td>{1, 2, 3}</td>
+			<td>{1, 2, 3, 4}</td>
+		</tr>
+		<tr>
+			<td>{2}</td>
+			<td>{1, 3}</td>
+			<td>{1, 2, 4}</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>{3}</td>
+			<td>{1, 4}</td>
+			<td>{1, 3, 4}</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>{4}</td>
+			<td>{2, 3}</td>
+			<td>{2, 3, 4}</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>{3, 4}</td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>{4, 2}</td>
+			<td></td>
+			<td></td>
+		</tr>
+        </table>
+	<caption>Figure 2.1: Combinations of different sizes from the set {1, 2, 3, 4}.</caption>
+    	</figure>
+
+        <h2 id="examples">3. Finding the pattern</h2>
+
+        <p>By looking at the numbers in the previous table, one can start making guesses.</p>
+
+	<p>In the previous two articles <a href="../cartesianproduct">An algorithm for the Cartesian product</a> and <a href="../permutations">A permutations algorithm</a>, I will define a simple machine with a few instructions that illustrates what the steps can be to produce the next combination. The machine works on a list of indices ([0, 1, 2, 3]) each of which represent one element from each list of elements.</p>
+
+	<p>The machine has the instructions <code>save</code> which saves the current state of the indices somewhere so that I can do something with it later. <code>pick</code> picks the number given as the argument from the list and shows the state of the combination. It also removes it from the list. <code>put back</code> puts a number back into the list from the combination.</p>
+
+        <figure id="figure2">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre class="code">
+pick 0 = 0
+pick 1 = 0, 1
+save = 0, 1
+put back 1
+pick 2 = 0, 2
+save = 0, 2
+put back 2
+pick 3 = 0, 3
+save = 0, 3
+put back 3
+put back 0
+pick 1 = 1
+pick 2 = 1, 2
+save = 1, 2
+put back 2
+pick 3 = 1, 3
+save = 1, 3
+put back 3
+put back 1
+pick 2 = 2
+pick 3 = 2, 3
+save = 2, 3
+put back 3
+put back 2
+		</pre>
+		</div>
+
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre class="code">
+pick 0 = 0
+pick 1 = 0, 1
+pick 2 = 0, 1, 2
+save = 0, 1, 2
+put back 2
+pick 3 = 0, 1, 3
+save = 0, 1, 3
+put back 3
+put back 1
+pick 2 = 0, 2
+pick 3 = 0, 2, 3
+save = 0, 2, 3
+put back 3
+put back 2
+put back 1
+pick 1 = 1
+pick 2 = 1, 2
+pick 3 = 1, 2, 3
+save = 1, 2, 3
+put back 3
+put back 2
+put back 1
+		</pre>
+		</div>
+<caption>Figure 3.1: A machine creating the 2-combinations and 3-combinations of of {0, 1, 2, 3}.</caption>
+</figure>
+
+<p>From the code above, one can draw some conclusions:</p>
+
+<ol class="list">
+	<li>The numbers are drawn or picked from a pool of numbers which is the same as the indices of the data that the <i>combinations()</i> function should operate on.</li>
+	<li>When a number has been picked, the second number is picked in the same fashion, but starting from where the last number was picked (see lines 0 and 1 or 1 and 2). How many number of times this happens depends on how the size of the combinations (two for 2-combinations, three for 3-combinations, ...).</li>
+	<li><code>save</code> happens when no more numbers can be picked, due to the constraint placed by <i>n</i>-combinations.</li>
+</ol>
+
+        <h2 id="programmingasolution">4. Programming the solution</h2>
+
+	<p>Let's start by implementing the case when there are no more numbers to pick, that is to say the number that have already been picked amount to the size of the combinations the function was instructed to produce. This is called the <i>base case</i>.</p>
+
+	<p>The function operates on 1) the <i>combination</i> 2) the <i>data</i> 3) the </i>indices</i> 4) a number <i>n</i>, and 5) a <i>callback</i>.</p>
+
+	<p>The <i>combination</i> parameter is an empty list which is altered during the time that the function is run. The <i>data</i> parameter is the list of elements that make up the input data (the elements that the function should make combinations of). The <i>indices</i> is a list of integers <i>0&ndash;9</i> that represent the elements in the <i>data</i>. The number <i>n</i> indicates to the function how many more numbers can be picked. The number <i>i</i> keeps track of which element to pick next (see item 2 in the list in <a href="#examples">Section 3</a>) between the recursive calls. The <i>callback</i> is called with the combination as argument whenever a new combination is ready.
+
+	<p>The function will only print the <i>combination</i> once the <i>n</i> argument has reached 0. And since nothing has been done with the <i>combination</i> argument, only an empty list is printed</i>.
+
+		<figure>
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code1" class="code">
+def combinations(combination, data, indices, n, i, callback):
+	if n == 0:
+		callback(combination)
+		return
+	
+	combinations(combination, data, indices, n-1, i, callback)
+	
+combinations([], ["A", "B", "C"], [0, 1, 2], 2, 0, print)
+		</div>
+		<caption>Table 4.1: Starting to write the base case for the combinations algorithm.</caption>
+		<br/>
+		<btn class="copy" id="code1-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code1-copy");
+				var code = document.getElementById("code1");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+		<p>From the previous examples in <a href="#examples">Section 3</a> one can tell that a loop is needed in order to pick successive elements from the list of indices. It was also possible to see that whenever a second or third element was picked, the algorithm should start not from 0, but from where the last number was picked. Third, whenever the algorithm was finished picking elements, they were put back together in the reverse order in which they were picked. As an example, if {0, 1, 2} was a combination, and there are no more elements to pick, 2 is put back first, followed by 1 and then last 0.</p>
+
+		<p>On line 7 an element is picked from the list that contains the data. Every time this is done (in the recursive calls) it applies to the first element, and when the recursive call is finished it applies to the second, and so on. On line 8 the same routine of picking an element and putting it back is initiated. Note that the recursively called function starts the <i>while</i>-loop at <i>j</i>. On line 9 that same element that was picked on line 7 is put back into the list of indices (and in the same position).
+
+		<p>How does it avoid making combinations that already exist? The algorithm does pick, for example, {1, 3} (consider the data to be [0, 1, 2, 3] and <i>n=2</i>), but when the next recursive call cannot pick another element due to <i>j=len(indices)</i> it starts popping elements off <i>combination</i> instead. The promise of <i>j</i> is that only a larger number than the one before it can be picked.</p>
+
+		<figure>
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code2" class="code">
+def combinations(combination, data, indices, n, i, callback):
+	if n == 0:
+		callback([data[i] for i in combination])
+		return
+
+	j = i
+	while j < len(indices):
+		combination.append(indices.pop(j))
+		combinations(combination, data, indices, n-1, j, callback)
+		indices.insert(j, combination.pop(-1))
+		j += 1
+
+combinations([], ["A", "B", "C", "D"], [0, 1, 2, 3], 3, 0, print)
+		</pre>
+		</div>
+		<caption>Table 4.2: Adding the last bits of code for the combinations algorithm.</caption>
+		<br/>
+		<btn class="copy" id="code2-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code2-copy");
+				var code = document.getElementById("code2");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+		<p>I made the code more Pythonic by turning the <i>combinations()</i> function into an iterator. Note that it may be wise to operate on a list or array of indices that each represent the elements in the data. In this case, the list of indices is changed during the time that the algorithm runs.</p>
+		<figure>
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code3" class="code">
+def combinations(data, n):
+    indices = [x for x in range(0, len(data))]
+    combination = []
+    yield from _combinations(data, combination, indices, n, 0)
+
+def _combinations(data, combination, indices, n, i):
+    if n == 0:
+        yield tuple([data[i] for i in combination])
+        return
+
+    j = i
+    while j < len(indices):
+        combination.append(indices.pop(j))
+        yield from _combinations(data, combination, indices, n-1, j)
+        indices.insert(j, combination.pop(-1))
+        j += 1
+
+for c in combinations(["A", "B", "C", "D"], 3): print(c)
+		</pre>
+		</div>
+		<caption>Table 4.3: Making the code more Pythonic by turning the function into an iterator.</caption>
+		<br/>
+		<btn class="copy" id="code3-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code3-copy");
+				var code = document.getElementById("code3");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+
+		<h2 id="comparingoutput">5. Comparing output</h2>
+
+		<p>One can compare actual output from the finished algorithm and the "machine" instructions in <a href="#examples">Section 3</a>. Below are first the same instructions (and output) again. Below that is output from an actual run of the algorithm, with <i>print()</i> statements generating the same text as in the example.</p>
+
+		<p>The algorithm is less effective than what is maybe possible. It arrives at some dead ends (lines 14, 23, 27) where it cannot add another number due to <i>j</i> reaching its limit.</p>
+
+        <figure id="figure3">
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre class="code">
+pick 0 = 0
+pick 1 = 0, 1
+pick 2 = 0, 1, 2
+save = 0, 1, 2
+put back 2
+pick 3 = 0, 1, 3
+save = 0, 1, 3
+put back 3
+put back 1
+pick 2 = 0, 2
+pick 3 = 0, 2, 3
+save = 0, 2, 3
+put back 3
+put back 2
+put back 1
+pick 1 = 1
+pick 2 = 1, 2
+pick 3 = 1, 2, 3
+save = 1, 2, 3
+put back 3
+put back 2
+put back 1
+		</pre>
+		</div>
+
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre class="code">
+pick 0 = 0
+pick 1 = 0, 1
+pick 2 = 0, 1, 2
+save = 0, 1, 2
+put back 2
+pick 3 = 0, 1, 3
+save = 0, 1, 3
+put back 3
+put back 1
+pick 2 = 0, 2
+pick 3 = 0, 2, 3
+save = 0, 2, 3
+put back 3
+put back 2
+pick 3 = 0, 3
+put back 3
+put back 0
+pick 1 = 1
+pick 2 = 1, 2
+pick 3 = 1, 2, 3
+save = 1, 2, 3
+put back 3
+put back 2
+pick 3 = 1, 3
+put back 3
+put back 1
+pick 2 = 2
+pick 3 = 2, 3
+put back 3
+put back 2
+pick 3 = 3
+put back 3
+		</pre>
+		</div>
+		<caption>Figure 5.1: Comparing actual output (below) and the imagined algorithm (above).</caption>
+	</figure>
+
+		<h2 id="doyouhavequestions">6. Do you have questions about this writeup?</h2>
+
+		<p>Please send your questions to <a href="mailto:nblomqvist834@gmail.com">nblomqvist834@gmail.com</a>.</p>
+
+	</body>
+</html>
