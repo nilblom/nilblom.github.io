@@ -1,0 +1,259 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Nils Blomqvist's web page</title>
+		<link rel="stylesheet" href="../style.css?v=202603171749">
+		<script src="../scripts.js"></script>
+	</head>
+	<body>
+		<h1><a href="../">< home</a> A simple Named Entity Recognition algorithm for English</h1>
+
+		<p>Timeline:</p>
+		<ul>
+			<li>2026-03-22: First published.</li>
+		</ul>
+
+		<p>The final program can be downloaded <a href="./ner_algorithm.py">here</a>.</p>
+
+		<p>Table of Contents</p>
+		<ol>
+			<li><a href="#forewords">1. Forewords</a></li>
+			<li><a href="#whatarecombinations">2. What is Named Entity Recognition (NER)?</li>
+			<li><a href="#examples">3. Learning from the text</a></li>
+			<li><a href="#programmingasolution">4. Programming a solution</a></li>
+			<li><a href="#doyouhavequestions">5. Do you have questions about this writeup?</a></li>
+		</ol>
+
+        <p>List of figures</p>
+
+        <ol>
+		<li><a href="#figure1">2.1: A snippet of text from Alice in Wonderland</a></li>
+        	<li><a href="#figure2">2.2: A snippet of text from The Book Review Digest, Volume 13, 1917</a></li>
+        	<li><a href="#figure2">2.3: A list of entities recognized by the final algorithm</a></li>
+        </ol>
+
+        <p>List of programming code</p>
+
+        <ol>
+        	<li><a href="#code1">4.1 An initial attempt at extracting NER's</a></li>
+        	<li><a href="#code2">4.2 Adding improvements to the NER algorithm</a></li>
+        	<li><a href="#code3">4.3 Adding support for the use of "of" to the NER algorithm</a></li>
+        </ol>
+
+        <h2 id="forewords">1. Forewords</h2>
+
+	<p>This article is about Named Entity Recognition using a simple linguistic cue &ndash; the fact that only named entities appear with initial capital in the middle of text (with the exception of "I"). In this text, I will present a simple algorithm that can extract named entities in English text.</p>
+
+        <h2 id="whatarecombinations">2. What are named entities?</h2>
+
+	<p>A named entity is something that is named in the text. Examples are the name of a city (Stockholm) or the name of a person (Alice). I will begin with presenting a snippet of text that I will use, from the book Alice in Wonderland (from <a href="https://www.gutenberg.org/ebooks/11">Project Gutenberg</a>). Note that I have tokenized it, using whitespace as a token separator.</p>
+
+	<figure>
+		<p style="border:1px solid;padding:5px;">There was a table set out under a tree in front of the house , and the March Hare and the Hatter were having tea at it : a Dormouse was sitting between them , fast asleep , and the other two were using it as a cushion , resting their elbows on it , and talking over its head . “ Very uncomfortable for the Dormouse , ” thought Alice ; “ only, as it’s asleep , I suppose it doesn’t mind . ”</p>
+	<caption>Figure 2.1: A snippet of text from Alice in Wonderland.</caption>
+    	</figure>
+
+	<p>The text features several named entities: "March Hare", "Hatter" and "Dormouse" for example.</p>
+
+        <h2 id="examples">3. Learning from the text</h2>
+
+	<p>From the text, one call tell that NER's occur in the text with an initial capital letter. In the case with "March Hare", there are two words that together make up the NER.</p>
+
+        <h2 id="programmingasolution">4. Programming the solution</h2>
+
+	<p>Let's start with finding those NER's that occur in the middle of the text, and exclude "I". Note that the tokens in the text were separated into a list by using Python's <i>split()</i> function.</p>
+
+		<figure>
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code1" class="code">
+def find_named_entities(tokens):
+	entities = []
+	sentence_end = ['.', '!', '?']
+	exclude_words = ["I"]
+	i = 0
+	while i < len(tokens):
+		if i == 0 or tokens[i-1] in sentence_end:
+			pass
+		elif tokens[i][0].isupper() and tokens[i] not in exclude_words:
+			entities.append(i)
+		i += 1
+	return entities
+
+for i in find_named_entities(tokens):
+	print(tokens[i])
+		</pre>
+		</div>
+		<caption>Table 4.1: An initial attempt at extracting NER's.</caption>
+		<br/>
+		<btn class="copy" id="code1-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code1-copy");
+				var code = document.getElementById("code1");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+		<p>The above code will produce the following list of tokens: "March", "Hare", "Hatter", "Dormouse", "Very", "Dormouse", "Alice". Is it good enough? It has some problems. "March" and "Hare" are recognized as separate entities. "Very" is not an entity but is included.</p>
+
+		<p>It is possible to make some changes to the algorithm in order to produce a better result. Note that the results from the algorithm below includes two indices (one indicating the first token and one indicating the last token) (lines 26-29).</p>
+
+		<figure>
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code2" class="code">
+def find_named_entities(tokens):
+	entities = []
+	sentence_end = ['.', '!', '?']
+	sentence_start = ['“']
+	exclude_words = ["I"]
+	entity_length_limit = 2
+	i = 0
+	while i < len(tokens):
+		if i == 0 or (tokens[i-1] in sentence_end) or (tokens[i-1] in sentence_start):
+			pass
+
+		elif tokens[i][0].isupper() and tokens[i] not in exclude_words:
+			j = i
+			while j >= 0 and (j > i-entity_length_limit) and tokens[j][0].isupper():
+				j -= 1
+
+			k = 0
+			while k < len(entities):
+				if entities[k][0] == j+1:
+					entities.pop(-1)
+				k += 1
+
+			entities.append((j+1, i))
+		i += 1
+	return entities
+
+for i, j in find_named_entities(tokens):
+	for n in range(i, j+1):
+		print(tokens[n], end=" ")
+	print()
+		</pre>
+		</div>
+		<caption>Table 4.2: Adding improvements to the NER algorithm.</caption>
+		<br/>
+		<btn class="copy" id="code2-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code2-copy");
+				var code = document.getElementById("code2");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+		<p>On line 8, I have added a condition to check for sentence initial tokens, so that words that occur in the same relative position as "Very" are excluded. On line 12-14 I have added backtracking to find the beginning of it once an entity has been recognized (now "March" and "Hare" will be included in the results as "March Hare"). On lines 16-20 I have added code to look through the entities to find those that span the same preceding token and replace it with a span (a starting index and ending index) that covers the larger entity. Compare for example "Hare" and "March Hare" &ndash; the former spans only one token while the latter spans two.</p>
+
+		<p>With the improvements the output now becomes "March Hare", "Hatter", "Dormouse", "Dormouse", "Alice", "I".</p>
+
+		<p>Let's try the algorithm using a different text. Below is another snippet of text, this time from The Book Review Digest, Volume 13, 1917 (also from <a href="https://www.gutenberg.org/ebooks/53750">Project Gutenberg</a>). It includes some new peculiarties like the use of <i>of</i> in "Quarterly List of New Technical Books" and long entities (up to nine tokens) such as "Applied Science Reference Department of Pratt Institute Free Library"). This text is also already tokenized using whitespace as a token separator.</p>
+
+		<figure>
+			<p style="border:1px solid;padding:5px;">Many minds and hands have contributed to the success of the Book Review Digest in the year 1917 . Descriptive notes have been written by Margaret Jackson , Corinne Bacon , Justina Leavitt Wilson and Mary Katharine Reely . Classification numbers have been assigned by Corinne Bacon . The editorship has been divided between Margaret Jackson and Mary Katharine Reely , Miss Jackson leaving at the end of October to assume new duties on the staff of the New York Public Library School . Thruout the year the tasks of assembling material , preparing copy , and meeting the exacting demands of proof and press work have been carried on by Pauline H. Rich and Alice Sterling , and , on the business side , the correspondence which keeps us in touch with advertisers , publishers and subscribers has been ably handled by Frances Sanville . Credit for the supplementary List of Documents published with each issue goes to Adelaide R. Hasse and Edna B. Gearhart of the New York Public Library . For the Quarterly List of New Technical Books , to the Applied Science Reference Department of Pratt Institute Free Library , Brooklyn.</p>
+			<caption>Figure 2.2: A snippet of text from The Book Review Digest, Volume 13, 1917.</caption>
+		</figure>
+
+		<p>Let's make one last change in the code to accommodate the use of <i>of</i> to bind together words that are part of an entity. See lines 6, 14 and 16-17 for the code changes that allows the use of <i>of</i>. On lines 16-17, it is made sure that the binding word actually binds two tokens that start with capital letter. If it is not, the binding word is excluded from the span that is saved in the <i>entities</i> list. Note that <i>entity_length_limit</i> has been set to <i>9</i> instead of the previous <i>2</i>.</p>
+
+		<figure>
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code3" class="code">
+def find_named_entities(tokens):
+	entities = []
+	sentence_end = ['.', '!', '?']
+	sentence_start = ['“']
+	exclude_words = ["I"]
+	entity_length_limit = 9
+	bind_words = ["of"]
+	i = 0
+	while i < len(tokens):
+		if i == 0 or (tokens[i-1] in sentence_end) or (tokens[i-1] in sentence_start):
+			pass
+
+		elif tokens[i][0].isupper() and tokens[i] not in exclude_words:
+			j = i
+			while j >= 0 and (j > i-entity_length_limit) and (tokens[j][0].isupper() or tokens[j] in bind_words):
+				j -= 1
+			if tokens[j+1] in bind_words:
+				j += 1
+
+			k = 0
+			while k < len(entities):
+				if entities[k][0] == j+1:
+					entities.pop(-1)
+				k += 1
+
+			entities.append((j+1, i))
+		i += 1
+	return entities
+
+for i, j in find_named_entities(tokens):
+	for n in range(i, j+1):
+		print(tokens[n], end=" ")
+	print()
+		</pre>
+		</div>
+		<caption>Table 4.2: Adding support for the use of "of" to the NER algorithm.</caption>
+		<br/>
+		<btn class="copy" id="code3-copy">Copy code</btn>
+		<script>
+			(function() {
+				var copy = document.getElementById("code3-copy");
+				var code = document.getElementById("code3");
+				copy.addEventListener("click", function(e) {
+					navigator.clipboard.writeText(code.innerText);
+				});
+			})();
+		</script>
+		</figure>
+
+		<p>Below are the recognized entities (the output) from running the algorithm with the text above as input.</p>
+
+		<figure>
+		<ol class="list">
+			<li>Book Review Digest</li>
+			<li>Margaret Jackson</li>
+			<li>Corinne Bacon</li>
+			<li>Justina Leavitt Wilson</li>
+			<li>Mary Katharine Reely</li>
+			<li>Corinne Bacon</li>
+			<li>Margaret Jackson</li>
+			<li>Mary Katharine Reely</li>
+			<li>Miss Jackson</li>
+			<li>October</li>
+			<li>New York Public Library School</li>
+			<li>Pauline H. Rich</li>
+			<li>Alice Sterling</li>
+			<li>Frances Sanville</li>
+			<li>List of Documents</li>
+			<li>Adelaide R. Hasse</li>
+			<li>Edna B. Gearhart</li>
+			<li>New York Public Library</li>
+			<li>Quarterly List of New Technical Books</li>
+			<li>Applied Science Reference Department of Pratt Institute Free Library</li>
+			<li>Brooklyn</li>
+		</ol>
+		<caption>Figure 2.3: A list of entities recognized by the final algorithm.</caption>
+		</figure>
+
+<h2 id="weaknesses">5. Weaknesses using the approach</h2>
+
+		<p>The apparent weakness with this approach is that sentence initial entities are never recognized &ndash; the algorithm relies on entities appearing in the middle of the text.</p>
+
+		<h2 id="doyouhavequestions">6. Do you have questions about this writeup?</h2>
+
+		<p>Please send your questions to <a href="mailto:nblomqvist834@gmail.com">nblomqvist834@gmail.com</a>.</p>
+
+	</body>
+</html>
