@@ -1,0 +1,350 @@
+<html>
+	<head>
+		<title>Nils Blomqvist's web page</title>
+		<link rel="stylesheet" href="../style.css?v=202602201008">
+		<script src="../scripts.js"></script>
+	</head>
+	<body>
+		<h1><a href="../">< home</a> Operations Jeopardy</h1>
+
+		<p>Timeline:</p>
+		<ul>
+			<li>2026-04-??: First published.</li>
+		</ul>
+
+		<p>The program can be downloaded <a href="./operations_jeopardy.py">here</a>.
+
+		<p>Table of Contents</p>
+		<ol>
+			<li><a href="#forewords">1. Forewords</a></li>
+            <li><a href="#whatisoperationsjeopardy">2. Introduction: What is Operations Jeopardy?</li>
+            <li><a href="#formulatingasolution">3. Formulating a solution</a></li>
+            <li><a href="#programmingasolution">4. Programming the solution</a></li>
+            <li><a href="#discussionandconclusion">5. Discussion and conclusion</a></li>
+            <li><a href="#doyouhavequestions">6. Do you have questions about this writeup?</a></li>
+        </ol>
+
+        <p>List of tables</p>
+
+        <ol>
+        	<li><a href="#table1">3.1 A rod (the table) with spinning wheels (different operators)</a></li>
+        	<li><a href="#table2">4.1 Results showing different equations that sum to 26</a></li>
+        </ol>
+
+        <p>List of programming code</p>
+
+        <ol>
+        	<li><a href="#code1">4.1 Using <i>permutations()</i> and <i>product()</i> to create combinations using different operations and operators</a></li>
+        	<li><a href="#code2">4.2 Adding parentheses to an existing mathematical expression</a></li>
+        	<li><a href="#code3">4.3 Grouping mathematical expressions according to where parentheses would occur naturally</a></li>
+        	<li><a href="#code4">4.4 Functions for turning mathematical expressions into list form, including sorting</a></li>
+        	<li><a href="#code5">4.5 Filtering away expressions that are equivalent</a></li>
+        </ol>
+
+        <h2 id="forewords">1. Forewords</h2>
+
+        <p>This is another game I found on a math group on Facebook. I found it interesting due to my interest in combinatorics (see my other articles).</p>
+
+        <h2 id="whatisoperationsjeopardy">2. Introduction: What is Operations Jeopardy?</h2>
+
+        <p>The Operations Jeopardy was defined as finding which combination of operations (choose freely, they may also be repeated) of +, -, *, /, (, ), ^, <i>sqrt</i>, <i>3rt</i>, <i>factorial</i> and <i>dfactorial</i> can be used to combine the numers 2, 4, 8, 6 into the sum 26. Come up with one or more solutions.</p>
+
+        <p>For example, one solution is 2*8+4+6. Another solution is 8**(1/3) + 6 * 4**1/2 * 2.</p>
+
+        <p>How about coming up with all possible solutions? Python 3 provides some functions that are interesting to this assignment.</p>
+
+        <h2 id="formulatingasolution">3. Formulating a solution</h2>
+
+        <p>You can imagine a rod with spinning wheels on it. On each wheel are operations, but only one may be selected at a time. The wheels occur between and before each digit n<sub>0</sub>, n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub> where the digits make up a permutation of [2, 4, 6, 8]:</p>
+
+        <figure id="table1">
+        <table cellpadding=0 cellspacing=0>
+            <tr>
+                <td rowspan=3>sqrt<br/>3rt<br/>factorial<br/>none</td>
+                <td>n<sub>0</sub></td>
+                <td rowspan=4>+<br/>-<br/>*<br/>/</td>
+                <td rowspan=3>sqrt<br/>3rt<br/>factorial<br/>none</td>
+                <td>n<sub>1</sub></td>
+                <td rowspan=4>+<br/>-<br/>*<br/>/</td>
+                <td rowspan=3>sqrt<br/>3rt<br/>factorial<br/>none</td>
+                <td>n<sub>2</sub></td>
+                <td rowspan=4>+<br/>-<br/>*<br/>/</td>
+                <td rowspan=3>sqrt<br/>3rt<br/>factorial<br/>none</td>
+                <td>n<sub>3</sub></td>
+            </tr>
+        </table> 
+        <caption>Table 3.1: A rod (the table) with spinning wheels (different operators).</caption>
+        </figure>
+
+        <p>I opted to ignore ^. The power function can cause issues with long calculation times in Python. I also restricted the use of parentheses to three variants for every expression (<i>OP</i> is some binary mathematical operator):</p>
+</p>
+
+        <ul>
+            <li>(n<sub>0</sub> OP <sub>1</sub>) OP n<sub>2</sub> OP n<sub>3</sub></li>
+            <li>n<sub>0</sub> OP (<sub>1</sub> OP n<sub>2</sub>) OP n<sub>3</sub></li>
+            <li>n<sub>0</sub> OP <sub>1</sub> OP (n<sub>2</sub> OP n<sub>3</sub>)</li>
+        </ul>
+
+    <p>Some expressions will effectively be generated twice, one time when parentheses are added to the expression as shown above, and one time when "natural" parentheses are added. Using the option to generate naturally grouped parenthesized expressions then adds to the amount of expressions that will be filtered out.</p>
+
+        <p>Creating different permutations of [2, 4, 6, 8] is necessary because the use of operators where the order is important requires one to test both "sides", so that for example 2 / 4 also can be considered as 4 / 2.</p>
+
+        <p>It turns out, the main issue is not generating mathematical expressions or evaluating them (although in the case of the power operator it can cause problems with long calculation times) &ndash; the problem is that a lot of combinations will just be reorderings. For example, 2 * 8 + 4 + 6 and 2 * 8 + 6 + 4 can be considered the same but different in order. How can one get rid of them?</p>
+
+        <p>The different reorderings can be reduced to one by first inserting parentheses where they would occur naturally. For example, (2* 8) + 4 + 6 is not different than 2 * 8 + 4 + 6. Then one can sort the terms so that regardless of the initial order, the end result will be the same. (2 * 8) + 4 + 6 and (2 * 8) + 6 + 4 could both be sorted as (2 * 8) + 6 + 4 where the parentheses expression is treated as a single sortable element, which makes the two initial expression <i>equivalent</i>. Note that without adding parentheses, in the case where binary operators that require a specific order to the terms (- or /), the terms cannot be rearranged as it would change the expression (consider 2 / 4 versus 4 / 2).</p>
+
+        <p>The problem is with sorting the elements, and making each element (by using *, - or /) sortable as single elements and not multiple, since the order must be maintained.</p>
+
+        <p>The major part of the content of this article is then dedicated to solving the problem of finding and getting rid of expressions that are just reorderings of a previous expression.</p>
+
+    <h2 id="programmingasolution">4. Programming a solution</h2>
+
+    <p>I show excerpts from the program in this section (the download link can be found at the top of this page).</p>
+
+    <p>To generate the expressions, <i>itertools.product()</i> and <i>itertools.permutations()</i> can be used as shown below. Here, <i>ops</i> is a list of mathematical operators (+, -, ...) and <i>ops_unary</i> is a list of unary operators (sqrt, factorial, ...) (including an empty string, in order to opt-out of using any unary operator whatsoever). In the code below, the ordering of digits, operations and operators reflects that in the table shown in <a href="#formulatingasolution">Section 3</a>.</p>
+
+    <figure>
+    <div class="code-block">
+    <pre class="line-numbers"></pre>
+    <pre id="code1" class="code">
+permutations = itertools.permutations(numbers)
+for p in permutations:
+    products = list(itertools.product(ops_unary, [p[0]], ops, ops_unary, [p[1]], ops, ops_unary, [p[2]], ops, ops_unary, [p[3]]))
+    </pre>
+    </div>
+    <caption>Table 4.1: Using <i>permutations()</i> and <i>product()</i> to create combinations using different operations and operators.</caption>
+    <br/>
+    <btn class="copy" id="code1-copy">Copy code</btn>
+    <script>
+        (function() {
+            var copy = document.getElementById("code1-copy");
+            var code = document.getElementById("code1");
+            copy.addEventListener("click", function(e) {
+                navigator.clipboard.writeText(code.innerText);
+            });
+        })();
+    </script>
+    </figure>
+
+    <p>I also used an algorithm to add parentheses to each expression, resulting in more diverse expressions. This had the effect of adding reorderings, which is explained in the <a href="#discussionandconclusion">Discussion and conclusion</a>.</p>
+
+    <figure>
+    <div class="code-block">
+    <pre class="line-numbers"></pre>
+    <pre id="code2" class="code">
+def insert_parentheses(s):
+    results = [s]
+    i = 0
+    while i < len(s)-2:
+        s1 = copy.copy(s)
+        s1.insert(i, '(')
+        s1.insert(i+4, ')')
+        results.append(s1)
+        i += 2
+    return results
+    </pre>
+    </div>
+    <caption>Table 4.2: Adding parentheses to an existing mathematical expression.</caption>
+    <br/>
+    <btn class="copy" id="code1-copy">Copy code</btn>
+    <script>
+        (function() {
+            var copy = document.getElementById("code2-copy");
+            var code = document.getElementById("code2");
+            copy.addEventListener("click", function(e) {
+                navigator.clipboard.writeText(code.innerText);
+            });
+        })();
+    </script>
+    </figure>
+
+    <p>To each expression where parentheses have been added, parentheses are added again as explained in <a href="#formulatingasolution">Section 3</a> (parentheses are added where they would occur naturally, according to the order of operations).</p>
+
+    <p><i>group_expressions()</i> adds these "naturally" occurring parentheses. The algorithm works by first finding the operator (line 4). From there, if no left and right parentheses that contains the operator and the terms of the binary operation are found, parentheses are simply added. If another parentheses expression is found to either the left or right, parentheses are added before and after those.</p>
+
+    <figure>
+    <div class="code-block">
+    <pre class="line-numbers"></pre>
+    <pre id="code3" class="code">
+def group_expressions(s):
+    s1 = copy.copy(s)
+    i = 0
+    while i < len(s1):
+        if s1[i] in ['*', '-', '/']:
+            k = i
+
+            j = find_expression_left(s1, i-2)
+            if j > -1 and find_expression_right(s1, i) == i+2:
+                pass
+            elif s1[i-1] == ')':
+                s1.insert(find_expression_left(s1, i-2), '(')
+            else:
+                s1.insert(i-1, '(')
+            i += 1
+
+            j = find_expression_right(s1, i)
+            if j > -1 and find_expression_right(s1, i) == k+2:
+                pass
+            elif s1[i+1] == '(':
+                s1.insert(find_expression_right(s1, i+2), ')')
+            else:
+                s1.insert(i+2, ')')
+
+        i += 1
+
+    return s1
+    </pre>
+    </div>
+    <caption>Table 4.3: Grouping mathematical expressions according to where parentheses would occur naturally.</caption>
+    <br/>
+    <btn class="copy" id="code3-copy">Copy code</btn>
+    <script>
+        (function() {
+            var copy = document.getElementById("code3-copy");
+            var code = document.getElementById("code3");
+            copy.addEventListener("click", function(e) {
+                navigator.clipboard.writeText(code.innerText);
+            });
+        })();
+    </script>
+    </figure>
+
+    <p>The whole process of sorting and checking for equivalency is done using <i>is_equal()</i> (line 52). It is first done by turning each expression into a recursive list form with <i>expression_to_list()</i> (parentheses expressions form their own list) (line 0-13). After that, the expression is sorted using <i>list_sort()</i> (line 40-50) and equivalency is then checked for. <i>list_sort()</i> is a simple insertion sort sorting algorithm that also handles lists by simply treating them as greater than numbers, using a special comparison method <i>compare()</i> (lines 15-24). <i>list_sort()</i> also avoids sorting expressions of subtraction and division (line 43-45) as the terms may otherwise end up in the wrong order.</p>
+
+    <figure>
+    <div class="code-block">
+    <pre class="line-numbers"></pre>
+    <pre id="code4" class="code">
+def expression_to_list(s):
+    s1 = []
+    i = 0
+    while i < len(s):
+        if s[i] == '(':
+            end = find_expression_right(s, i+1)
+            sublist = s[i+1:end]
+            items = expression_to_list(sublist)
+            s1.append(items)
+            i = end+1
+        else:
+            s1.append(s[i])
+            i += 1
+    return s1
+
+def compare(a, b):
+    if type(a) == list and type(b) == list:
+        if len(a) > len(b):
+            return 1
+    elif type(a) == list:
+        return 1
+    elif type(b) == list:
+        return 0
+    else:
+        return a > b
+        
+def swap(s, i, j):
+    copy = s[j]
+    s[j] = s[i]
+    s[i] = copy
+
+def find_max(s):
+    max = 0
+    i = 0
+    while i < len(s):
+        if compare(s[i], s[max]) == 1:
+            max = i
+        i += 1
+    return max
+
+def list_sort(s):
+    i = 0
+    while i < len(s):
+        if i+1 < len(s) and s[i+1] in ['-', '/']:
+            i += 3
+            continue
+        max = find_max(s[i:])
+        swap(s, i, i+max)
+        if type(s[i]) == list:
+            list_sort(s[i])
+        i += 1
+
+def is_equal(s1, s2):
+    s1 = expression_to_list(s1)
+    s2 = expression_to_list(s2)
+    list_sort(s1)
+    list_sort(s2)
+    return s1 == s2
+    </pre>
+    </div>
+    <caption>Table 4.4: Functions for turning mathematical expressions into list form, including sorting.</caption>
+    <br/>
+    <btn class="copy" id="code4-copy">Copy code</btn>
+    <script>
+        (function() {
+            var copy = document.getElementById("code4-copy");
+            var code = document.getElementById("code4");
+            copy.addEventListener("click", function(e) {
+                navigator.clipboard.writeText(code.innerText);
+            });
+        })();
+    </script>
+    </figure>
+
+    <p>To filter (away) duplicate expressions, <i>is_equal()</i> is used in a loop that effectively checks all the expressions for equivalency. Because equivalency is transitive, it is enough to start the inner loop from <i>i+1</i> (the previous elements <i>0...i</i> have already been checked).</p>
+
+    <figure>
+    <div class="code-block">
+    <pre class="line-numbers"></pre>
+    <pre id="code5" class="code">
+i = 0
+while i < len(solutions):
+    s1 = solutions[i]
+    j = i+1
+    while j < len(solutions):
+        s2 = solutions[j]
+        if i != j and is_equal(s1, s2):
+            solutions.pop(j)
+        else:
+            j += 1
+    i += 1
+    </pre>
+    </div>
+    <caption>Table 4.5: Filtering away expressions that are equivalent.</caption>
+    <br/>
+    <btn class="copy" id="code5-copy">Copy code</btn>
+    <script>
+        (function() {
+            var copy = document.getElementById("code5-copy");
+            var code = document.getElementById("code5");
+            copy.addEventListener("click", function(e) {
+                navigator.clipboard.writeText(code.innerText);
+            });
+        })();
+    </script>
+    </figure>
+
+    <p>The results below show five expressions that each sum to 26. They were originally in list form and were joined into strings using Python's <i>String.join()</i> function. You can see how not all equivalent expressions are removed (compare the second and third examples), because <i>group_expressions()</i> works by adding parentheses from left to right, while (in the third example) <i>insert_parentheses()</i> had already parenthesized a later binary expression (<i>6 * 8**(1/3)</i>), making the previous one (<i>4**(1/2) * 6</i>) unavailable to <i>group_expressions()</i>. This can easily be solved by simply turning off the use of <i>insert_parentheses()</i>, but the cost is that other interesting expressions (as in the first example) are never generated.</p>
+
+    <figure id="table2">
+    <pre>
+( ( factorial(2) + 4**(1/2) ) * 6 ) + 8**(1/3)
+factorial(2) + ( ( 4**(1/2) * 6 ) * 8**(1/3) )
+factorial(2) + ( 4**(1/2) * ( 6 * 8**(1/3) ) )
+( factorial(2) - factorial(4) ) + ( 6 * 8 )
+( ( factorial(2) * 4**(1/2) ) * 6 ) + 8**(1/3)</pre>
+    <caption>Table 4.1: Results showing different equations that sum to 26.</caption>
+    </figure>
+
+    <p>In total, 2174 expressions were generated that equalled 26, and that number was reduced to 786 using the method to find reorderings that has been presented in this article.</p>
+
+    <h2 id="discussionandconclusion">5. Discussion and conclusions</h2>
+
+    <p>Generating mathemathical expressions that equal 26 (or some other number) is fairly simple but may take a lot of processing power if it involves operations such as the power operation. In those cases, a timer can be used to simply stop calculating whenever the timeout is reached. Such a method can be useful (but was not used in this article) to generate more mathematical expressions.</p>
+
+    <p>If one wants to generate "unique" mathematical expressions that are not just reorderings of another expression, a structure must be applied to the expression that allows it to be sorted without loosing the expression. Such a structure may be applying parentheses where they would occur naturally (see <a href="https://en.wikipedia.org/wiki/Order_of_operations">see Order of operations on Wikipedia</a> after which the expression can be transformed into a data structure that can more easily be sorted. In this article, a recursive list form was used to represent mathematical expressions with (possibly nested) parentheses expressions. Uses of parentheses where they would not occur naturally interacted, in this article, with the function that adds them where they would, so that reorderings appeared in the end results.</p>
+
+	<h2 id="doyouhavequestions">6. Do you have questions about this writeup?</h2>
+
+	<p>Please send your questions to <a href="mailto:nblomqvist834@gmail.com">nblomqvist834@gmail.com</a>.</p>
+
+	</body>
+</html>
