@@ -38,7 +38,7 @@ function GUI_DealCards(player, cards, hidden) {
 }
 
 function GUI_PlayPlayerCardByClick(e) {
-    var playArea = document.querySelector("#play-area");
+    var playArea = document.querySelector("#play-area-player");
     playArea.appendChild(e);
     var e = document.querySelector("#player-area");
     e.onclick = null;
@@ -46,7 +46,7 @@ function GUI_PlayPlayerCardByClick(e) {
 
 function GUI_PlayCard(player, card, callback) {
     var e = document.querySelector("#" + player + "-area");
-    var playArea = document.querySelector("#play-area");
+    var playArea = document.querySelector("#play-area-" + player);
     for (var i = 0; i < e.children.length; i++) {
         var c = e.children[i];
         if (c.id == "card" + card.suite + "_" + card.number) {
@@ -364,7 +364,9 @@ function Plump_GetStartingPlayer(p) {
 }
 
 function GUI_ClearPlayArea() {
-    var e = document.querySelector("#play-area");
+    var e = document.querySelector("#play-area-player");
+    e.innerHTML = "";
+    e = document.querySelector("#play-area-cpu");
     e.innerHTML = "";
 }
 
@@ -500,17 +502,31 @@ function Plump_PlayRound(p, round) {
     function onRoundFinished() {
         if (p.points[round-1][0][0] == p.points[round-1][0][1])
             p.points[round-1][0][2] = p.points[round-1][0][0] + 10;
+        else
+            p.player.plump = true;
 
         if (p.points[round-1][1][0] == p.points[round-1][1][1])
             p.points[round-1][1][2] = p.points[round-1][1][0] + 10;
+        else
+            p.cpu.plump = true;
 
         GUI_Scoreboard_AddScore("player", p.points[round-1][0][2]);
         GUI_Scoreboard_AddScore("cpu", p.points[round-1][1][2]);
 
-        if (p.round == 20)
-            GUI_ShowFinalScore(p);
-        else
-            Plump_PlayRound(p, round+1);
+        function continueStep() {
+            if (p.round == 20)
+                GUI_ShowFinalScore(p);
+            else
+                Plump_PlayRound(p, round+1);
+        }
+
+        if (p.player.plump || p.cpu.plump) {
+            GUI_ShowPlump(p, function() {
+                continueStep();
+            });
+        } else {
+            continueStep();
+        }
     }
 
     function onCardsSelected(playerCard, cpuCard) {

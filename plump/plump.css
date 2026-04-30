@@ -84,6 +84,20 @@
     transform:translate(-50%,-50%);
 }
 
+#play-area-player {
+    position: absolute;
+    right: 0;
+    height: 100%;
+    width: 50%;
+}
+
+#play-area-cpu {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 50%;
+}
+
 #player-area {
     bottom:0;
 }
