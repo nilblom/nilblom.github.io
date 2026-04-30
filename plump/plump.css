@@ -1,0 +1,127 @@
+#screen {
+    position:relative;
+    height:500px;
+    width:700px;
+    background:darkgreen;
+    border:5px;
+    border-style: solid;
+}
+
+#choose-sticks,
+#stick-finished,
+#plump,
+#final-score {
+    border: 4px dashed;
+    padding: 10px;
+    position: absolute;
+    text-align: center;
+    left: 50%;
+    top: 50%;
+    background: white;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    width: 200px;
+}
+
+#choose-sticks input {
+    padding: 5px;
+    margin: 10px;
+    box-sizing: border-box;
+    width: 40px;
+    font-size: 14px;
+    border: 1px solid;
+}
+
+#choose-sticks button,
+#stick-finished button {
+    padding: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+#menu-background {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 700px;
+    height: 500px;
+    background: #00000085;
+    z-index: 1;
+}
+
+#menu {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    background: white;
+    z-index: 1;
+}
+
+#player-score, #cpu-score {
+    position: absolute;
+    top: 50%;
+    left: 80%;
+    padding: 10px;
+    text-align: center;
+    width: 100px;
+    transform: translate(-50%, -50%);
+    background: grey;
+}
+
+#play-area {
+    background: darkgreen;
+    text-align:center;
+    box-sizing:border-box;
+    width:180px;
+    height:130px;
+    padding:20px;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+}
+
+#player-area {
+    bottom:0;
+}
+
+#cpu-area {
+    top:0;
+}
+
+#cpu-area,
+#player-area {
+    background:brown;
+    text-align:center;
+    box-sizing:border-box;
+    padding:20px;
+    width:700px;
+    height:130px;
+    position:absolute;
+    left:50%;
+    transform:translatex(-50%);
+}
+
+#player-scoreboard, #cpu-scoreboard {
+    top: 330px;
+    left: 50%;
+    width: 100%;
+    height: 40px;
+    position: absolute;
+    background: black;
+    color: white;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+    transform: translatex(-50%);
+}
+
+#cpu-scoreboard {
+    top: 130px;
+}
+
+#cpu-score {
+    left: 20%;
+}
