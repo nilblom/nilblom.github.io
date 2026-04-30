@@ -259,7 +259,7 @@ function Plump_CPUPlayCard(p, playerCard) {
         }
     }
     if (playableCards.length == 0)
-        playableCard = p.cpu.cards;
+        playableCards = p.cpu.cards;
 
     var choice = GetRandomInteger(0, playableCards.length-1);
     var card = playableCards[choice];
@@ -358,7 +358,7 @@ function Plump_GetStartingPlayer(p) {
     if (p.points[p.round-1][0][0] > p.points[p.round-1][1][0])
         return p.player;
     else if (p.points[p.round-1][0][0] == p.points[p.round-1][1][0])
-        return p.startingPlayer;
+        return p.player;
     else
         return p.cpu;
 }
