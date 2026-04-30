@@ -230,9 +230,23 @@ function Card_ShuffleDeck(deck) {
     }
 }
 
+function Card_PrintCard(c) {
+    var s = "{suite: " + c.suite + ", number: " + c.number + "}";
+    return s;
+}
+
 function Card_DealCards(deck, player, n) {
     for (var i = 0; i < n; i++)
         player.cards.push(deck.pop());
+}
+
+function Card_RemoveCPUCard(p, card) {
+    for (var i = 0; i < p.cpu.cards.length; i++) {
+        var c = p.cpu.cards[i];
+        if (Card_IsSameCard(c, card)) {
+            p.cpu.cards.splice(i, 1);
+        }
+    }
 }
 
 function Plump_CPUPlayCard(p, playerCard) {
@@ -245,8 +259,11 @@ function Plump_CPUPlayCard(p, playerCard) {
         }
     }
     if (playableCards.length == 0)
-        playableCards = p.cpu.cards;
-    return p.cpu.cards.pop(GetRandomInteger(0, p.cpu.cards.length-1));
+        playableCard = p.cpu.cards;
+
+    var choice = GetRandomInteger(0, playableCards.length-1);
+    var card = playableCards[choice];
+    return card;
 }
 
 function GUI_MakePlayerCardsPlayableByClicking(playableCards, playedCallback) {
@@ -496,11 +513,7 @@ function Plump_PlayRound(p, round) {
             Plump_PlayRound(p, round+1);
     }
 
-    var cardsPlayed = 0;
     function onCardsSelected(playerCard, cpuCard) {
-        if (cardsPlayed == numberOfCards)
-            return;
-
         var winningCard;
         if (p.startingPlayer == p.player)
             winningCard = Card_WinningCard(playerCard, cpuCard);
@@ -561,12 +574,14 @@ function Plump_PlayRound(p, round) {
             GUI_MakePlayerCardsPlayableByClicking(p.player.cards, function(playerCard) {
                 Card_RemovePlayerCard(p, playerCard);
                 var cpuCard = Plump_CPUPlayCard(p, playerCard);
+                Card_RemoveCPUCard(p, cpuCard);
                 GUI_PlayCard("cpu", cpuCard, function() {
                     onCardsSelected(playerCard, cpuCard);
                 });
             });
         } else {
             var cpuCard = Plump_CPUPlayCard(p, null);
+            Card_RemoveCPUCard(p, cpuCard);
             GUI_PlayCard("cpu", cpuCard, function() {});
             var playableCards = Plump_GetPlayerPlayableCards(p, cpuCard);
             GUI_MakePlayerCardsPlayableByClicking(playableCards, function(playerCard) {
