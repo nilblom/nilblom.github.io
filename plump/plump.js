@@ -244,7 +244,9 @@ function GUI_MakePlayerCardsPlayableByClicking(playedCallback) {
         if (event.target.id == "player-area") return;
         var c = event.target;
         GUI_PlayPlayerCardByClick(event.target);
-        playedCallback({suite: c.getAttribute("data-suite"), number: Number(c.getAttribute("data-number"))});
+        setTimeout(function() {
+            playedCallback({suite: c.getAttribute("data-suite"), number: Number(c.getAttribute("data-number"))});
+        }, 1000);
     }
 }
 
@@ -258,7 +260,9 @@ function GUI_HideChooseSticks() {
     e.style.display = "none";
 }
 
-function GUI_ShowChooseSticks(cpuSticks, ok_callback) {
+function GUI_ShowChooseSticks(p, cpuSticks, ok_callback) {
+    var s = document.querySelector("#choose-sticks-round");
+    s.innerHTML = "Round " + p.round + "/20";
     var e = document.querySelector("#choose-sticks");
     e.style.display = "";
     var c = document.querySelector("#cpu-selected-sticks");
@@ -271,12 +275,21 @@ function GUI_ShowChooseSticks(cpuSticks, ok_callback) {
     i.focus();
     var b = e.querySelector("button");
     b.onclick = function() {
+        var n = Number(i.value);
+        if (isNaN(n)) return;
+        if (n < 0 || n > 10) return;
+        if (!Plump_PlayerChooseSticks(p, n, cpuSticks)) return;
         ok_callback(i.value);
     }
 }
 
-function Plump_PlayerChooseSticks(p, sticks) {
-    p.points[p.round-1][0][0] = sticks;
+function Plump_PlayerChooseSticks(p, sticks, cpuSticks) {
+    if (cpuSticks != null && Plump_GetNumberOfCardsForRound(p.round) == (sticks + cpuSticks))
+        return false;
+    else if (sticks > Plump_GetNumberOfCardsForRound(p.round))
+        return false;
+    p.points[p.round-1][0][0] = Number(sticks);
+    return true;
 }
 
 function Plump_CPUChooseSticks(p, opposingSticks, maxSticks) {
@@ -405,6 +418,13 @@ function GUI_ShowFinalScore(p) {
     e.innerText = "The game is finished! Your score is " + playerScore + ". The CPU scored " + cpuScore + ".";
 }
 
+function Plump_IncreaseScore(p, player) {
+    if (p.player == player)
+        p.points[p.round-1][0][1]++;
+    else
+        p.points[p.round-1][1][1]++;
+}
+
 function Plump_PlayRound(p, round) {
     p.showedPlayerPlump = false;
     p.showedCPUPlump = false;
@@ -456,10 +476,10 @@ function Plump_PlayRound(p, round) {
             winningCard = Card_WinningCard(cpuCard, playerCard);
 
         if (Card_IsSameCard(winningCard, playerCard)) {
-            p.points[round-1][0][1]++;
+            Plump_IncreaseScore(p, p.player);
             p.startingPlayer = p.player;
         } else {
-            p.points[round-1][1][1]++;
+            Plump_IncreaseScore(p, p.cpu);
             p.startingPlayer = p.cpu;
         }
 
@@ -522,8 +542,7 @@ function Plump_PlayRound(p, round) {
     }
     
     if (p.startingPlayer == p.player) {
-        GUI_ShowChooseSticks(null, function(playerSticks) {
-            Plump_PlayerChooseSticks(p, playerSticks);
+        GUI_ShowChooseSticks(p, null, function(playerSticks) {
             var cpuSticks = Plump_CPUChooseSticks(p, playerSticks, numberOfCards);
             GUI_HideChooseSticks();
 
@@ -533,8 +552,7 @@ function Plump_PlayRound(p, round) {
         });
     } else {
         var cpuSticks = Plump_CPUChooseSticks(p, null, numberOfCards);
-        GUI_ShowChooseSticks(cpuSticks, function(playerSticks) {
-            Plump_PlayerChooseSticks(p, playerSticks);
+        GUI_ShowChooseSticks(p, cpuSticks, function(playerSticks) {
             GUI_HideChooseSticks();
 
             GUI_Score_SetScore("cpu", cpuSticks, 0);
