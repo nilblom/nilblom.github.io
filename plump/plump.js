@@ -275,6 +275,7 @@ function GUI_MakePlayerCardsPlayableByClicking(playableCards, playedCallback) {
         if (!clickedCardIsPlayable)
             return;
 
+        e.onclick = null;
         GUI_PlayCard("player", card, function() {
             playedCallback({suite: c.getAttribute("data-suite"), number: Number(c.getAttribute("data-number"))});
         });
