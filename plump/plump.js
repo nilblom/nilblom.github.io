@@ -582,20 +582,12 @@ function Plump_PlayRound(p, round) {
                 }
             }
 
-            if (p.cpu.plump || p.player.plump) {
-                if (p.player.plump && p.showedPlayerPlump == false) {
+            if ( (p.player.plump && p.showedPlayerPlump == false) || (p.cpu.plump && p.showedCPUPlump == false) ) {
+                if (p.showedPlayerPlump == false)
                     p.showedPlayerPlump = true;
-                    GUI_ShowPlump(p, function() {
-                        onCardsPlayed();
-                    });
-                }
-
-                if (p.cpu.plump && p.showedCPUPlump == false) {
+                if (p.showedCPUPlump == false)
                     p.showedCPUPlump = true;
-                    GUI_ShowPlump(p, function() {
-                        onCardsPlayed();
-                    });
-                }
+                GUI_ShowPlump(p, onCardsPlayed);
             } else {
                 onCardsPlayed();
             }
