@@ -403,12 +403,12 @@ function GUI_ShowPlump(p, onHide) {
     var e = document.querySelector("#plump");
     e.style.display = "";
     e.innerText = "";
-    if (p.player.plump)
+    if (p.player.plump && p.cpu.plump)
+        e.innerText = "Both made plump.";
+    else if (p.player.plump)
         e.innerText = "You made plump. ";
     else if (p.cpu.plump)
         e.innerText = "CPU made plump.";
-    else if (p.player.plump && p.cpu.plump)
-        e.innerText = "Both made plump.";
     setTimeout(function() {
         e.style.display = "none";
         onHide();
