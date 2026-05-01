@@ -7,19 +7,23 @@ function GUI_Score_SetScore(player, s, n) {
     e.innerHTML = n;
 }
 
-function GUI_Scoreboard_Clear() {
-    var e = document.querySelector("#player-scoreboard-scores");
-    e.innerHTML = "";
-    var e = document.querySelector("#cpu-scoreboard-scores");
-    e.innerHTML = "";
+function GUI_Scoreboard_Reset() {
+    var e = document.querySelector("#player-scoreboard-score");
+    e.innerHTML = "0";
+    var e = document.querySelector("#cpu-scoreboard-score");
+    e.innerHTML = "0";
 }
 
-function GUI_Scoreboard_AddScore(player, n) {
-    var s = document.createElement("span");
-    s.style.marginRight = "5px";
-    s.innerText = n;
-    var e = document.querySelector("#" + player + "-scoreboard");
-    e.appendChild(s);
+function GUI_Scoreboard_UpdateScore(p) {
+    var playerScore = 0, cpuScore = 0;
+    for (var i = 0; i < 20; i++) {
+        playerScore += p.points[i][0][2];
+        cpuScore += p.points[i][1][2];
+    }
+    var e = document.querySelector("#cpu-scoreboard-score");
+    e.innerHTML = cpuScore;
+    e = document.querySelector("#player-scoreboard-score");
+    e.innerHTML = playerScore;
 }
 
 function GUI_CreateMenu() {
@@ -35,13 +39,6 @@ function GUI_DealCards(player, cards, hidden) {
     for (const c of cards) {
         e.appendChild(GUI_Card_RenderCard(c, player, hidden));
     }
-}
-
-function GUI_PlayPlayerCardByClick(e) {
-    var playArea = document.querySelector("#play-area-player");
-    playArea.appendChild(e);
-    var e = document.querySelector("#player-area");
-    e.onclick = null;
 }
 
 function GUI_PlayCard(player, card, callback) {
@@ -87,9 +84,9 @@ var Card = {
 
 function GUI_Card_RenderCard(card, player, hidden) {
     var e = document.createElement("img");
+    e.setAttribute("image-url", "./images/" + card.image);
     if (hidden == true) {
         e.src = "./images/back-red.png";
-        e.setAttribute("image-url", "./images/" + card.image);
     } else {
         e.src = "./images/" + card.image;
     }
@@ -201,12 +198,10 @@ var Plump = {
 };
 
 function Plump_GetNumberOfCardsForRound(round) {
-    if (round < 10)
+    if (round <= 10)
         return 10+1-round;
-    if (round < 20)
-        return round+1-10;
     else
-        return 10;
+        return round-10;
 }
 
 function GetRandomInteger(min, max) {
@@ -280,10 +275,9 @@ function GUI_MakePlayerCardsPlayableByClicking(playableCards, playedCallback) {
         if (!clickedCardIsPlayable)
             return;
 
-        GUI_PlayPlayerCardByClick(event.target);
-        setTimeout(function() {
+        GUI_PlayCard("player", card, function() {
             playedCallback({suite: c.getAttribute("data-suite"), number: Number(c.getAttribute("data-number"))});
-        }, 1000);
+        });
     }
 }
 
@@ -295,16 +289,21 @@ function GUI_HidePlump() {
 function GUI_HideChooseSticks() {
     var e = document.querySelector("#choose-sticks");
     e.style.display = "none";
+    
+    // When the user chooses first, it sometimes takes
+    // a while for this element to hide. Therefore
+    // hide it by default.
+    e = document.querySelector("#cpu-selected-sticks");
+    e.style.display = "none";
 }
 
 function GUI_ShowChooseSticks(p, cpuSticks, ok_callback) {
-    var s = document.querySelector("#choose-sticks-round");
-    s.innerHTML = "Round " + p.round + "/20";
     var e = document.querySelector("#choose-sticks");
     e.style.display = "";
     var c = document.querySelector("#cpu-selected-sticks");
     if (cpuSticks != null) {
         c.innerText = "CPU selected " + cpuSticks + " sticks.";
+        c.style.display = "";
     } else {
         c.style.display = "none";
     }
@@ -358,7 +357,7 @@ function Plump_GetStartingPlayer(p) {
     if (p.points[p.round-1][0][0] > p.points[p.round-1][1][0])
         return p.player;
     else if (p.points[p.round-1][0][0] == p.points[p.round-1][1][0])
-        return p.player;
+        return p.startingPlayer;
     else
         return p.cpu;
 }
@@ -476,28 +475,50 @@ function Plump_GetPlayerPlayableCards(p, cpuCard) {
     return playableCards;
 }
 
+function GUI_SetRound(p) {
+    var e = document.querySelector("#round");
+    e.innerHTML = p.round + "/20";
+}
+
+function Plump_IsPlump(p, player) {
+    var index = player == p.player ? 0 : 1;
+    if (p.points[p.round-1][index][1] > p.points[p.round-1][index][0])
+        return true;
+    else if ( (p.points[p.round-1][index][1] < p.points[p.round-1][index][0]) &&
+            (player.cards.length < (p.points[p.round-1][index][0] - p.points[p.round-1][index][1])) )
+        return true;
+    else
+        return false;
+}
+
 function Plump_PlayRound(p, round) {
     p.showedPlayerPlump = false;
     p.showedCPUPlump = false;
     p.round = round;
+    GUI_SetRound(p);
     GUI_UpdateScore(p);
     p.player.cards = [];
     p.cpu.cards = [];
     p.deck = Card_CreateDeck();
     p.player.plump = false;
     p.cpu.plump = false;
-
-    if (p.startingPlayer == this.player)
-        p.startingPlayer = this.cpu;
+    var nextPlayer = null;
+    p.startingPlayer = p.startingPlayer == p.player ? p.cpu : p.player;
 
     GUI_ClearAllCards(p);
 
     Card_ShuffleDeck(p.deck);
     var numberOfCards = Plump_GetNumberOfCardsForRound(round);
     Card_DealCards(p.deck, p.player, numberOfCards);
-    GUI_DealCards("player", p.player.cards, false);
     Card_DealCards(p.deck, p.cpu, numberOfCards);
-    GUI_DealCards("cpu", p.cpu.cards, true);
+
+    if (numberOfCards == 1) {
+        GUI_DealCards("player", p.player.cards, true);
+        GUI_DealCards("cpu", p.cpu.cards, false);
+    } else {
+        GUI_DealCards("player", p.player.cards, false);
+        GUI_DealCards("cpu", p.cpu.cards, true);
+    }
 
     function onRoundFinished() {
         if (p.points[round-1][0][0] == p.points[round-1][0][1])
@@ -510,8 +531,7 @@ function Plump_PlayRound(p, round) {
         else
             p.cpu.plump = true;
 
-        GUI_Scoreboard_AddScore("player", p.points[round-1][0][2]);
-        GUI_Scoreboard_AddScore("cpu", p.points[round-1][1][2]);
+        GUI_Scoreboard_UpdateScore(p);
 
         function continueStep() {
             if (p.round == 20)
@@ -531,27 +551,27 @@ function Plump_PlayRound(p, round) {
 
     function onCardsSelected(playerCard, cpuCard) {
         var winningCard;
-        if (p.startingPlayer == p.player)
+        if (nextPlayer == p.player)
             winningCard = Card_WinningCard(playerCard, cpuCard);
         else
             winningCard = Card_WinningCard(cpuCard, playerCard);
 
         if (Card_IsSameCard(winningCard, playerCard)) {
             Plump_IncreaseScore(p, p.player);
-            p.startingPlayer = p.player;
+            nextPlayer = p.player;
         } else {
             Plump_IncreaseScore(p, p.cpu);
-            p.startingPlayer = p.cpu;
+            nextPlayer = p.cpu;
         }
 
         GUI_UpdateScore(p);
         GUI_ShowStickFinished(winningCard == playerCard, function() {
             GUI_ClearPlayArea();
             
-            if (p.points[round-1][0][1] > p.points[round-1][0][0])
+            if (Plump_IsPlump(p, p.player))
                 p.player.plump = true;
 
-            if (p.points[round-1][1][1] > p.points[round-1][1][0])
+            if (Plump_IsPlump(p, p.cpu))
                 p.cpu.plump = true;
 
             function onCardsPlayed() {
@@ -562,7 +582,7 @@ function Plump_PlayRound(p, round) {
                 }
             }
 
-            if (p.cpu.plump || p.player.plump)
+            if (p.cpu.plump || p.player.plump) {
                 if (p.player.plump && p.showedPlayerPlump == false) {
                     p.showedPlayerPlump = true;
                     GUI_ShowPlump(p, function() {
@@ -576,17 +596,18 @@ function Plump_PlayRound(p, round) {
                         onCardsPlayed();
                     });
                 }
-            else
+            } else {
                 onCardsPlayed();
+            }
         });
     }
 
 
     function onSticksPicked(firstStick) {
         if (firstStick)
-            p.startingPlayer = Plump_GetStartingPlayer(p);
+            nextPlayer = Plump_GetStartingPlayer(p);
 
-        if (p.startingPlayer == p.player) {
+        if (nextPlayer == p.player) {
             GUI_MakePlayerCardsPlayableByClicking(p.player.cards, function(playerCard) {
                 Card_RemovePlayerCard(p, playerCard);
                 var cpuCard = Plump_CPUPlayCard(p, playerCard);
@@ -632,7 +653,7 @@ function Plump_PlayRound(p, round) {
 function Plump_PlayGame() {
     GUI_Score_SetScore("cpu", 0, 0);
     GUI_Score_SetScore("player", 0, 0);
-    GUI_Scoreboard_Clear();
+    GUI_Scoreboard_Reset();
 
     var p = {...Plump};
     PlumpGame = p;
@@ -651,5 +672,4 @@ window.onload = function() {
     GUI_HideStickFinished();
     GUI_HideFinalScore();
     GUI_CreateMenu();
-    
 };

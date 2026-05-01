@@ -1,6 +1,6 @@
 <html>
     <head>
-        <script src="./plump.js?v=202604301749"></script>
+        <script src="./plump.js?v=202605011520"></script>
         <link rel="stylesheet" href="plump.css">
     </head>
     <body style="user-select:none;">
@@ -15,13 +15,14 @@
             </div>
 
             <div id="cpu-scoreboard">
-                <span>CPU scoreboard:</span>
-                <span id="cpu-scoreboard-scores"></span>
+                <span>CPU score (total):</span>
+                <span id="cpu-scoreboard-score"></span>
             </div>
             
             <div id="player-scoreboard">
-                <span>Player scoreboard:</span>
-                <span id="player-scoreboard-scores"></span>
+                <div id="round-info"><span>Round:</span><span id="round">1</div></span>
+                <span>Player score (total):</span>
+                <span id="player-scoreboard-score"></span>
             </div>
 
             <div id="play-area">
@@ -36,7 +37,6 @@
             </div>
 
             <div id="choose-sticks">
-                <div id="choose-sticks-round">Round 1/20</div>
                 <div>Select the number of sticks:</div>
                 <input></input>
                 <button>Ok</button>
