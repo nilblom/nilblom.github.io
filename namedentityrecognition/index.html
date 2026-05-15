@@ -10,6 +10,7 @@
 
 		<p>Timeline:</p>
 		<ul>
+			<li>2026-05-15: Appended text to section 5.</li>
 			<li>2026-03-22: First published.</li>
 		</ul>
 
@@ -249,7 +250,7 @@ for i, j in find_named_entities(tokens):
 
 <h2 id="weaknesses">5. Weaknesses using the approach</h2>
 
-		<p>The apparent weakness with this approach is that sentence initial entities are never recognized &ndash; the algorithm relies on entities appearing in the middle of the text.</p>
+		<p>The apparent weakness with this approach is that sentence initial entities are never recognized &ndash; the algorithm relies on entities appearing in the middle of the text. If the text contains each entity in multiple places, not only sentence initial, this is an effective way of recognizing them, while it is not as effective at discovering each instance of an entity.</p>
 
 		<h2 id="doyouhavequestions">6. Do you have questions about this writeup?</h2>
 
