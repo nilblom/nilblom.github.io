@@ -27,9 +27,17 @@ function GUI_Scoreboard_UpdateScore(p) {
 }
 
 function GUI_CreateMenu() {
-    var startGame = document.querySelector("#menu-start-game");
-    startGame.onclick = function() {
-        Plump_PlayGame();
+    var easy = document.querySelector("#start-game-easy");
+    var medium = document.querySelector("#start-game-medium");
+    var p = {...Plump};
+    easy.onclick = function() {
+        p.difficulty = "easy";
+        Plump_PlayGame(p);
+        GUI_HideMenu();
+    };
+    medium.onclick = function() {
+        p.difficulty = "medium";
+        Plump_PlayGame(p);
         GUI_HideMenu();
     };
 }
@@ -244,7 +252,79 @@ function Card_RemoveCPUCard(p, card) {
     }
 }
 
-function Plump_CPUPlayCard(p, playerCard) {
+function Card_IsLowerThan(c1, c2) {
+    return c1.number > c2.number;
+}
+
+function Card_GetHighestCardLowerThanCard(cards, c) {
+    var lowest = null;
+    for (var i = 0; i < cards.length; i++) {
+        if (Card_IsLowerThan(c, cards[i]))
+            if (lowest == null || Card_IsLowerThan(cards[i], lowest))
+                lowest = cards[i];
+    }
+    return lowest;
+}
+
+function Card_GetCardHigherThanCard(cards, c) {
+    var lowest = null;
+    for (var i = 0; i < cards.length; i++) {
+        var c2 = cards[i];
+        if (c2.suite == c.suite && c2.number > c.number)
+            if (lowest == null || c2.number < lowest.number)
+                lowest = c2;
+    }
+    return lowest;
+}
+
+function Card_GetLowestCard(cards) {
+    var lowest = null;
+    for (var i = 0; i < cards.length; i++) {
+        if (lowest == null || cards[i].number < lowest.number)
+            lowest = cards[i];
+    }
+    return lowest;
+}
+
+function Card_GetHighestCard(cards) {
+    var highest = null;
+    for (var i = 0; i < cards.length; i++) {
+        if (highest == null || cards[i].number > highest.number)
+            highest = cards[i];
+    }
+    return highest;
+}
+
+function Plump_CPUPlayCardFirst(p) {
+    if (p.difficulty == "easy") {
+        var choice = GetRandomInteger(0, p.cpu.cards.length-1);
+        var card = p.cpu.cards[choice];
+        return card;
+    }
+
+    // Difficulty: medium
+
+    // Score reached, try to loose.
+    if (p.points[p.round-1][1][0] == p.points[p.round-1][1][1]) {
+        var c = Card_GetLowestCard(p.cpu.cards);
+        return c;
+
+    // If score is less than the wanted number of sticks,
+    // try to win the stick.
+    } else if (p.points[p.round-1][1][0] > p.points[p.round-1][1][1]) {
+        var c = Card_GetHighestCard(p.cpu.cards);
+        return c;
+
+    // If score is higher than the wanted number of sticks
+    // play a random card.
+    } else {
+        var choice = GetRandomInteger(0, p.cpu.cards.length-1);
+        var card = p.cpu.cards[choice];
+        return card;
+    }
+}
+
+function Plump_CPUPlayCardAgainstPlayerCard(p, playerCard) {
     var playableCards = [];
     if (playerCard != null) {
         for (var i = 0; i < p.cpu.cards.length; i++) {
@@ -253,12 +333,49 @@ function Plump_CPUPlayCard(p, playerCard) {
                 playableCards.push(c);
         }
     }
-    if (playableCards.length == 0)
-        playableCards = p.cpu.cards;
 
-    var choice = GetRandomInteger(0, playableCards.length-1);
-    var card = playableCards[choice];
-    return card;
+    // If no cards are playable, any card can be played.
+    if (p.difficulty == "easy") {
+        if (playableCards.length == 0)
+            playableCards = p.cpu.cards;
+        var choice = GetRandomInteger(0, playableCards.length-1);
+        var card = playableCards[choice];
+        return card;
+    }
+
+    // If score is equal to the wanted number of sticks,
+    // try to loose the stick.
+    if ( playableCards.length > 0 && (p.points[p.round-1][1][0] == p.points[p.round-1][1][1]) ) {
+        var c = Card_GetHighestCardLowerThanCard(playableCards, playerCard);
+        if (c == null)
+            c = Card_GetHighestCard(playableCards);
+        return c;
+
+    // If score is less than the wanted number of sticks,
+    // try to win the stick.
+    } else if ( playableCards.length > 0 && (p.points[p.round-1][1][0] > p.points[p.round-1][1][1]) ) {
+        var c = Card_GetCardHigherThanCard(playableCards, playerCard);
+
+        // Sacrifice the lowest playable card if the hand
+        // cannot be won.
+        if (c == null)
+            c = Card_GetLowestCard(playableCards);
+
+        return c;
+
+    // If score is higher than the wanted number of sticks
+    // play a random card.
+    } else if (playableCards.length > 0) {
+        var choice = GetRandomInteger(0, playableCards.length-1);
+        var card = playableCards[choice];
+        return card;
+
+    // If there are no "playable" cards, choose one at random.
+    } else if (playableCards.length == 0) {
+        var choice = GetRandomInteger(0, p.cpu.cards.length-1);
+        var card = p.cpu.cards[choice];
+        return card;
+    }
 }
 
 function GUI_MakePlayerCardsPlayableByClicking(playableCards, playedCallback) {
@@ -603,14 +720,14 @@ function Plump_PlayRound(p, round) {
         if (nextPlayer == p.player) {
             GUI_MakePlayerCardsPlayableByClicking(p.player.cards, function(playerCard) {
                 Card_RemovePlayerCard(p, playerCard);
-                var cpuCard = Plump_CPUPlayCard(p, playerCard);
+                var cpuCard = Plump_CPUPlayCardAgainstPlayerCard(p, playerCard);
                 Card_RemoveCPUCard(p, cpuCard);
                 GUI_PlayCard("cpu", cpuCard, function() {
                     onCardsSelected(playerCard, cpuCard);
                 });
             });
         } else {
-            var cpuCard = Plump_CPUPlayCard(p, null);
+            var cpuCard = Plump_CPUPlayCardFirst(p);
             Card_RemoveCPUCard(p, cpuCard);
             GUI_PlayCard("cpu", cpuCard, function() {});
             var playableCards = Plump_GetPlayerPlayableCards(p, cpuCard);
@@ -643,12 +760,11 @@ function Plump_PlayRound(p, round) {
 
 }
 
-function Plump_PlayGame() {
+function Plump_PlayGame(p) {
     GUI_Score_SetScore("cpu", 0, 0);
     GUI_Score_SetScore("player", 0, 0);
     GUI_Scoreboard_Reset();
 
-    var p = {...Plump};
     PlumpGame = p;
     p.player = Player_createPlayer();
     p.player.number = 0;

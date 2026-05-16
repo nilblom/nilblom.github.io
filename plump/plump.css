@@ -58,6 +58,7 @@
     background: white;
     z-index: 1;
     border: 5px dashed;
+    text-align: center;
 }
 
 #player-score, #cpu-score {
