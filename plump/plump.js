@@ -49,6 +49,41 @@ function GUI_DealCards(player, cards, hidden) {
     }
 }
 
+function GUI_AddToHistory(player, card, setStartingPlayer) {
+    var t = document.querySelector("#history table");
+
+    if (setStartingPlayer == true) {
+        var r = document.createElement("tr");
+        t.appendChild(r);
+        var e = document.createElement("td");
+        e.innerText = player == "player" ? "P" : "C";
+        r.appendChild(e);
+    }
+
+    var e = document.createElement("td");
+    e.innerText += card.readable;
+    t.lastChild.appendChild(e);
+    t.parentNode.scrollTo(0, t.parentNode.getBoundingClientRect().height);
+}
+
+function GUI_ShowPlayNextRound(callback) {
+    var e = document.querySelector("#play-next-round");
+    e.style.display = "";
+    e.querySelector("button").onclick = function() {
+        GUI_HidePlayNextRound();
+        callback();
+    }
+}
+
+function GUI_HidePlayNextRound() {
+    document.querySelector("#play-next-round").style.display = "none";
+}
+
+function GUI_HistoryClear() {
+    var t = document.querySelector("#history table");
+    t.innerHTML = "<tr><td>S</td><td>1:st</td><td>2:nd</td></tr><tr></tr>";
+}
+
 function GUI_PlayCard(player, card, callback) {
     var e = document.querySelector("#" + player + "-area");
     var playArea = document.querySelector("#play-area-" + player);
@@ -108,61 +143,61 @@ function GUI_Card_RenderCard(card, player, hidden) {
 
 function Card_CreateDeck() {
     var cards = [
-        {suite: "H", number: 2, image: "heart_2.png"},
-        {suite: "H", number: 3, image: "heart_3.png"},
-        {suite: "H", number: 4, image: "heart_4.png"},
-        {suite: "H", number: 5, image: "heart_5.png"},
-        {suite: "H", number: 6, image: "heart_6.png"},
-        {suite: "H", number: 7, image: "heart_7.png"},
-        {suite: "H", number: 8, image: "heart_8.png"},
-        {suite: "H", number: 9, image: "heart_9.png"},
-        {suite: "H", number: 10, image: "heart_10.png"},
-        {suite: "H", number: 11, image: "heart_jack.png"},
-        {suite: "H", number: 12, image: "heart_queen.png"},
-        {suite: "H", number: 13, image: "heart_king.png"},
-        {suite: "H", number: 14, image: "heart_1.png"},
+        {readable: "H2", suite: "H", number: 2, image: "heart_2.png"},
+        {readable: "H3", suite: "H", number: 3, image: "heart_3.png"},
+        {readable: "H4", suite: "H", number: 4, image: "heart_4.png"},
+        {readable: "H5", suite: "H", number: 5, image: "heart_5.png"},
+        {readable: "H6", suite: "H", number: 6, image: "heart_6.png"},
+        {readable: "H7", suite: "H", number: 7, image: "heart_7.png"},
+        {readable: "H8", suite: "H", number: 8, image: "heart_8.png"},
+        {readable: "H9", suite: "H", number: 9, image: "heart_9.png"},
+        {readable: "H10", suite: "H", number: 10, image: "heart_10.png"},
+        {readable: "HJ", suite: "H", number: 11, image: "heart_jack.png"},
+        {readable: "HQ", suite: "H", number: 12, image: "heart_queen.png"},
+        {readable: "HK", suite: "H", number: 13, image: "heart_king.png"},
+        {readable: "HA", suite: "H", number: 14, image: "heart_1.png"},
 
-        {suite: "D", number: 2, image: "diamond_2.png"},
-        {suite: "D", number: 3, image: "diamond_3.png"},
-        {suite: "D", number: 4, image: "diamond_4.png"},
-        {suite: "D", number: 5, image: "diamond_5.png"},
-        {suite: "D", number: 6, image: "diamond_6.png"},
-        {suite: "D", number: 7, image: "diamond_7.png"},
-        {suite: "D", number: 8, image: "diamond_8.png"},
-        {suite: "D", number: 9, image: "diamond_9.png"},
-        {suite: "D", number: 10, image: "diamond_10.png"},
-        {suite: "D", number: 11, image: "diamond_jack.png"},
-        {suite: "D", number: 12, image: "diamond_queen.png"},
-        {suite: "D", number: 13, image: "diamond_king.png"},
-        {suite: "D", number: 14, image: "diamond_1.png"},
+        {readable: "D2", suite: "D", number: 2, image: "diamond_2.png"},
+        {readable: "D3", suite: "D", number: 3, image: "diamond_3.png"},
+        {readable: "D4", suite: "D", number: 4, image: "diamond_4.png"},
+        {readable: "D5", suite: "D", number: 5, image: "diamond_5.png"},
+        {readable: "D6", suite: "D", number: 6, image: "diamond_6.png"},
+        {readable: "D7", suite: "D", number: 7, image: "diamond_7.png"},
+        {readable: "D8", suite: "D", number: 8, image: "diamond_8.png"},
+        {readable: "D9", suite: "D", number: 9, image: "diamond_9.png"},
+        {readable: "D10", suite: "D", number: 10, image: "diamond_10.png"},
+        {readable: "DJ", suite: "D", number: 11, image: "diamond_jack.png"},
+        {readable: "DQ", suite: "D", number: 12, image: "diamond_queen.png"},
+        {readable: "DK", suite: "D", number: 13, image: "diamond_king.png"},
+        {readable: "DA", suite: "D", number: 14, image: "diamond_1.png"},
 
-        {suite: "C", number: 2, image: "club_2.png"},
-        {suite: "C", number: 3, image: "club_3.png"},
-        {suite: "C", number: 4, image: "club_4.png"},
-        {suite: "C", number: 5, image: "club_5.png"},
-        {suite: "C", number: 6, image: "club_6.png"},
-        {suite: "C", number: 7, image: "club_7.png"},
-        {suite: "C", number: 8, image: "club_8.png"},
-        {suite: "C", number: 9, image: "club_9.png"},
-        {suite: "C", number: 10, image: "club_10.png"},
-        {suite: "C", number: 11, image: "club_jack.png"},
-        {suite: "C", number: 12, image: "club_queen.png"},
-        {suite: "C", number: 13, image: "club_king.png"},
-        {suite: "C", number: 14, image: "club_1.png"},
+        {readable: "C2", suite: "C", number: 2, image: "club_2.png"},
+        {readable: "C3", suite: "C", number: 3, image: "club_3.png"},
+        {readable: "C4", suite: "C", number: 4, image: "club_4.png"},
+        {readable: "C5", suite: "C", number: 5, image: "club_5.png"},
+        {readable: "C6", suite: "C", number: 6, image: "club_6.png"},
+        {readable: "C7", suite: "C", number: 7, image: "club_7.png"},
+        {readable: "C8", suite: "C", number: 8, image: "club_8.png"},
+        {readable: "C9", suite: "C", number: 9, image: "club_9.png"},
+        {readable: "C10", suite: "C", number: 10, image: "club_10.png"},
+        {readable: "CJ", suite: "C", number: 11, image: "club_jack.png"},
+        {readable: "CQ", suite: "C", number: 12, image: "club_queen.png"},
+        {readable: "CK", suite: "C", number: 13, image: "club_king.png"},
+        {readable: "CA", suite: "C", number: 14, image: "club_1.png"},
 
-        {suite: "S", number: 2, image: "spade_2.png"},
-        {suite: "S", number: 3, image: "spade_3.png"},
-        {suite: "S", number: 4, image: "spade_4.png"},
-        {suite: "S", number: 5, image: "spade_5.png"},
-        {suite: "S", number: 6, image: "spade_6.png"},
-        {suite: "S", number: 7, image: "spade_7.png"},
-        {suite: "S", number: 8, image: "spade_8.png"},
-        {suite: "S", number: 9, image: "spade_9.png"},
-        {suite: "S", number: 10, image: "spade_10.png"},
-        {suite: "S", number: 11, image: "spade_jack.png"},
-        {suite: "S", number: 12, image: "spade_queen.png"},
-        {suite: "S", number: 13, image: "spade_king.png"},
-        {suite: "S", number: 14, image: "spade_1.png"}
+        {readable: "S2", suite: "S", number: 2, image: "spade_2.png"},
+        {readable: "S3", suite: "S", number: 3, image: "spade_3.png"},
+        {readable: "S4", suite: "S", number: 4, image: "spade_4.png"},
+        {readable: "S5", suite: "S", number: 5, image: "spade_5.png"},
+        {readable: "S6", suite: "S", number: 6, image: "spade_6.png"},
+        {readable: "S7", suite: "S", number: 7, image: "spade_7.png"},
+        {readable: "S8", suite: "S", number: 8, image: "spade_8.png"},
+        {readable: "S9", suite: "S", number: 9, image: "spade_9.png"},
+        {readable: "S10", suite: "S", number: 10, image: "spade_10.png"},
+        {readable: "SJ", suite: "S", number: 11, image: "spade_jack.png"},
+        {readable: "SQ", suite: "S", number: 12, image: "spade_queen.png"},
+        {readable: "SK", suite: "S", number: 13, image: "spade_king.png"},
+        {readable: "SA", suite: "S", number: 14, image: "spade_1.png"}
     ];
     return cards;
 }
@@ -386,15 +421,17 @@ function GUI_MakePlayerCardsPlayableByClicking(playableCards, playedCallback) {
         var card = {suite: c.getAttribute("data-suite"), number: Number(c.getAttribute("data-number"))};
         var clickedCardIsPlayable = false;
         for (var i = 0; i < playableCards.length; i++) {
-            if (Card_IsSameCard(playableCards[i], card))
+            if (Card_IsSameCard(playableCards[i], card)) {
                 clickedCardIsPlayable = true;
+                card = playableCards[i];
+            }
         }
         if (!clickedCardIsPlayable)
             return;
 
         e.onclick = null;
         GUI_PlayCard("player", card, function() {
-            playedCallback({suite: c.getAttribute("data-suite"), number: Number(c.getAttribute("data-number"))});
+            playedCallback(card);
         });
     }
 }
@@ -610,6 +647,7 @@ function Plump_IsPlump(p, player) {
 }
 
 function Plump_PlayRound(p, round) {
+    GUI_HistoryClear();
     p.showedPlayerPlump = false;
     p.showedCPUPlump = false;
     p.round = round;
@@ -660,10 +698,10 @@ function Plump_PlayRound(p, round) {
 
         if (p.player.plump || p.cpu.plump) {
             GUI_ShowPlump(p, function() {
-                continueStep();
+                GUI_ShowPlayNextRound(continueStep);
             });
         } else {
-            continueStep();
+            GUI_ShowPlayNextRound(continueStep);
         }
     }
 
@@ -721,7 +759,9 @@ function Plump_PlayRound(p, round) {
             GUI_MakePlayerCardsPlayableByClicking(p.player.cards, function(playerCard) {
                 Card_RemovePlayerCard(p, playerCard);
                 var cpuCard = Plump_CPUPlayCardAgainstPlayerCard(p, playerCard);
+                GUI_AddToHistory("player", playerCard, true);
                 Card_RemoveCPUCard(p, cpuCard);
+                GUI_AddToHistory("cpu", cpuCard);
                 GUI_PlayCard("cpu", cpuCard, function() {
                     onCardsSelected(playerCard, cpuCard);
                 });
@@ -729,11 +769,13 @@ function Plump_PlayRound(p, round) {
         } else {
             var cpuCard = Plump_CPUPlayCardFirst(p);
             Card_RemoveCPUCard(p, cpuCard);
+            GUI_AddToHistory("cpu", cpuCard, true);
             GUI_PlayCard("cpu", cpuCard, function() {});
             var playableCards = Plump_GetPlayerPlayableCards(p, cpuCard);
             GUI_MakePlayerCardsPlayableByClicking(playableCards, function(playerCard) {
                 Card_RemovePlayerCard(p, playerCard);
                 onCardsSelected(playerCard, cpuCard);
+                GUI_AddToHistory("player", playerCard);
             });
         }
     }
@@ -781,4 +823,5 @@ window.onload = function() {
     GUI_HideStickFinished();
     GUI_HideFinalScore();
     GUI_CreateMenu();
+    GUI_HidePlayNextRound();
 };
