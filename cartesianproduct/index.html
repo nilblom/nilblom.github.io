@@ -438,17 +438,6 @@ while indices[i] < max[i]:
 	indices[i] += 1</pre>
 		</div>
 		<caption>Table 4.1: Starting to write the code for the Cartesian product.</caption>
-		<br/>
-		<btn class="copy" id="code1-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code1-copy");
-				var code = document.getElementById("code1");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 
@@ -469,17 +458,6 @@ def cartesian_product(indices, max, i):
 cartesian_product(1)</pre>
 		</div>
 		<caption>Table 4.2: A function <i>cartesian_product()</i> is defined.</caption>
-		<br/>
-		<btn class="copy" id="code2-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code2-copy");
-				var code = document.getElementById("code2");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>This time the digit at position 1 will be incremented to its maximum (4), but only after the digit at position 0 has been incremented to its maximum. After the function has run, <i>indices</i> will read [4, 4, 0, 0].</p>
@@ -502,17 +480,6 @@ def cartesian_product(indices, max, i):
 cartesian_product(indices, max, 1)</pre>
 		</div>
 		<caption>Table 4.3: Code for saving the state of <i>indices</i> is added.</caption>
-		<br/>
-		<btn class="copy" id="code3-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code3-copy");
-				var code = document.getElementById("code3");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>This time <i>indices</i> will be printed every time before the 0th digit is incremented.</p>
@@ -537,16 +504,6 @@ def cartesian_product(indices, max, i):
 cartesian_product(indices, max, 1)</pre>
 		</div>
 		<caption>Table 4.4: Code for entering the <i>while</i>-loop when <i>indices[i] == max[i]</i> is added.</caption>
-		<br/>
-		<btn class="copy" id="code4-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code4-copy");
-				var code = document.getElementById("code4");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
 		</script>
 		</figure>
 
@@ -574,17 +531,6 @@ def cartesian_product(indices, max, i):
 cartesian_product(indices, max, 1)</pre>
 		</div>
 		<caption>Table 4.5: The Cartesian product algorithm with the reset code added in.</caption>
-		<br/>
-		<btn class="copy" id="code5-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code5-copy");
-				var code = document.getElementById("code5");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>Now you can run the above code and set the starting value of <i>i</i> to how many number of positions you want to complete. Since the length of <i>indices</i> is 3, it should be set to 3 so that combinations are also created for the last two positions.</p>
@@ -619,17 +565,6 @@ if __name__ == '__main__':
 	cartesian_product(data, lambda x: print([data[i][x[i]] for i in range(len(data))]))</pre>
 		</div>
 		<caption>Table 4.6: The Cartesian product algoritm with a few conveniences.</caption>
-		<br/>
-		<btn class="copy" id="code6-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code6-copy");
-				var code = document.getElementById("code6");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>The code can be made more Pythonic (include characteristic features of the programming language) by removing the callback function and instead use the <i>yield</i> keyword. See the code snippet below. Changes to the code can be seen on lines 3, 11, 13. Note that the signature of the functions have been changed to include <i>data</i> and that the <i>callback</i> parameter has been removed. Note also that the use of the function looks like calling for example <i>range()</i> (a built-in Python function), in that the results of the function can be looped over in a for-loop.</p>
@@ -665,17 +600,6 @@ if __name__ == '__main__':
 		print(x)</pre>
 		</div>
 		<caption>Table 4.7: The Cartesian product algoritm also showcasing Python features.</caption>
-		<br/>
-		<btn class="copy" id="code7-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code7-copy");
-				var code = document.getElementById("code7");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<h2 id="doyouhavequestions">5. Do you have questions about this writeup?</h2>

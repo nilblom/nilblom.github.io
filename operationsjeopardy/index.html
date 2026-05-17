@@ -114,16 +114,6 @@ for p in permutations:
     </div>
     <caption>Table 4.1: Using <i>permutations()</i> and <i>product()</i> to create combinations using different operations and operators.</caption>
     <br/>
-    <btn class="copy" id="code1-copy">Copy code</btn>
-    <script>
-        (function() {
-            var copy = document.getElementById("code1-copy");
-            var code = document.getElementById("code1");
-            copy.addEventListener("click", function(e) {
-                navigator.clipboard.writeText(code.innerText);
-            });
-        })();
-    </script>
     </figure>
 
     <p>I also used an algorithm to add parentheses to each expression, resulting in more diverse expressions. This had the effect of adding reorderings, which is explained in the <a href="#discussionandconclusion">Discussion and conclusion</a>.</p>
@@ -146,16 +136,6 @@ def insert_parentheses(s):
     </div>
     <caption>Table 4.2: Adding parentheses to an existing mathematical expression.</caption>
     <br/>
-    <btn class="copy" id="code2-copy">Copy code</btn>
-    <script>
-        (function() {
-            var copy = document.getElementById("code2-copy");
-            var code = document.getElementById("code2");
-            copy.addEventListener("click", function(e) {
-                navigator.clipboard.writeText(code.innerText);
-            });
-        })();
-    </script>
     </figure>
 
     <p>To each expression where parentheses have been added, parentheses are added again as explained in <a href="#formulatingasolution">Section 3</a> (parentheses are added where they would occur naturally, according to the order of operations).</p>
@@ -197,16 +177,6 @@ def group_expressions(s):
     </div>
     <caption>Table 4.3: Grouping mathematical expressions according to where parentheses would occur naturally.</caption>
     <br/>
-    <btn class="copy" id="code3-copy">Copy code</btn>
-    <script>
-        (function() {
-            var copy = document.getElementById("code3-copy");
-            var code = document.getElementById("code3");
-            copy.addEventListener("click", function(e) {
-                navigator.clipboard.writeText(code.innerText);
-            });
-        })();
-    </script>
     </figure>
 
     <p>The whole process of sorting and checking for equivalency is done using <i>is_equal()</i> (line 52). It is first done by turning each expression into a nested list form with <i>expression_to_list()</i> (parentheses expressions form their own list) (line 0-13). After that, the expression is sorted using <i>list_sort()</i> (line 40-50) and equivalency is then checked for. <i>list_sort()</i> is a simple insertion sort sorting algorithm that also handles lists by simply treating them as greater than numbers, using a special comparison method <i>compare()</i> (lines 15-24). <i>list_sort()</i> also avoids sorting expressions of subtraction and division (line 43-45) as the terms may otherwise end up in the wrong order.</p>
@@ -277,16 +247,6 @@ def is_equal(s1, s2):
     </div>
     <caption>Table 4.4: Functions for turning mathematical expressions into list form, including sorting.</caption>
     <br/>
-    <btn class="copy" id="code4-copy">Copy code</btn>
-    <script>
-        (function() {
-            var copy = document.getElementById("code4-copy");
-            var code = document.getElementById("code4");
-            copy.addEventListener("click", function(e) {
-                navigator.clipboard.writeText(code.innerText);
-            });
-        })();
-    </script>
     </figure>
 
     <p>To filter (away) duplicate expressions, <i>is_equal()</i> is used in a loop that effectively checks all the expressions for equivalency. Because equivalency is transitive, it is enough to start the inner loop from <i>i+1</i> (the previous elements <i>0...i</i> have already been checked).</p>
@@ -310,16 +270,6 @@ while i < len(solutions):
     </div>
     <caption>Table 4.5: Filtering away expressions that are equivalent.</caption>
     <br/>
-    <btn class="copy" id="code5-copy">Copy code</btn>
-    <script>
-        (function() {
-            var copy = document.getElementById("code5-copy");
-            var code = document.getElementById("code5");
-            copy.addEventListener("click", function(e) {
-                navigator.clipboard.writeText(code.innerText);
-            });
-        })();
-    </script>
     </figure>
 
     <p>The results below show five expressions that each sum to 26. They were originally in list form and were joined into strings using Python's <i>String.join()</i> function. You can see how not all equivalent expressions are removed (compare the second and third examples), because <i>group_expressions()</i> works by adding parentheses from left to right, while (in the third example) <i>insert_parentheses()</i> had already parenthesized a later binary expression (<i>6 * 8**(1/3)</i>), making the previous one (<i>4**(1/2) * 6</i>) unavailable to <i>group_expressions()</i>. This can easily be solved by simply turning off the use of <i>insert_parentheses()</i>, but the cost is that other interesting expressions (as in the first example) are never generated.</p>

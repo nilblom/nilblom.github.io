@@ -228,17 +228,6 @@ for _ in range(0, 4):
 	# Do something at the 0th level of the array.</pre>
 		</div>
 		<caption>Table 4.1: Starting to write the code for the permutations algorithm.</caption>
-		<br/>
-		<btn class="copy" id="code1-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code1-copy");
-				var code = document.getElementById("code1");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>As in the example with the machine instructions, one needs to operate on the smaller subarray. It can be done with a recursive function call (line 8). Operating on a smaller subarray is only done if the current span plus one (<i>end+1-start</i>) of the array is larger than one, or in other terms if the current subarray has more than two elements. It is not necessary to do anything when the next subarray contains one element.</p>
@@ -265,17 +254,6 @@ for p in permutations(arr, 0, 3): print(p)
 		</pre>
 		</div>
 		<caption>Table 4.2: Adding to the code for computing permutations.</caption>
-		<br/>
-		<btn class="copy" id="code2-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code2-copy");
-				var code = document.getElementById("code2");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>The code is not doing anything useful yet, just running the top loop for each level of the array (<i>0&ndash;end</i>, <i>1&ndash;end</i>, ...), in total yielding 24 copies of the array (4x3x2x1 times).</p>
@@ -304,17 +282,6 @@ for p in permutations(arr, 0, 3): print(p)
 		</pre>
 		</div>
 		<caption>Table 4.3: Adding code to (completing) the permutations algorithm.</caption>
-		<br/>
-		<btn class="copy" id="code3-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code3-copy");
-				var code = document.getElementById("code3");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>The functions for finding the successor, swapping and sorting starting from a given index can be seen below. The functions <i>find_successor()</i> and <i>sort_from()</i> requires some explanation.</p>
@@ -353,17 +320,6 @@ def sort_from(arr, start):
 		</pre>
 		</div>
 		<caption>Table 4.4: Additional functions used in the permutations algorithm.</caption>
-		<br/>
-		<btn class="copy" id="code4-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code4-copy");
-				var code = document.getElementById("code4");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>One can make the code more user-friendly by allowing the data to be used as input:</p>
@@ -397,17 +353,6 @@ if __name__ == "__main__":
 		</pre>
 		</div>
 		<caption>Table 4.5: Making the algorithm more user-friendly.</caption>
-		<br/>
-		<btn class="copy" id="code6-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code6-copy");
-				var code = document.getElementById("code6");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 
@@ -482,17 +427,6 @@ int main() {
 		</pre>
 		</div>
 		<caption>Table 5.1: A rewrite of the Python implementation in C.</caption>
-		<br/>
-		<btn class="copy" id="code5-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code5-copy");
-				var code = document.getElementById("code5");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<h2 id="speedcomparisons">6. Speed comparisons</h2>

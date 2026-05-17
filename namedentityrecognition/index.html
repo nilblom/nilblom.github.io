@@ -86,17 +86,6 @@ for i in find_named_entities(tokens):
 		</pre>
 		</div>
 		<caption>Table 4.1: An initial attempt at extracting NER's.</caption>
-		<br/>
-		<btn class="copy" id="code1-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code1-copy");
-				var code = document.getElementById("code1");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>The above code will produce the following list of tokens: "March", "Hare", "Hatter", "Dormouse", "Very", "Dormouse", "Alice". Is it good enough? It has some problems. "March" and "Hare" are recognized as separate entities. "Very" is not an entity but is included.</p>
@@ -140,17 +129,6 @@ for i, j in find_named_entities(tokens):
 		</pre>
 		</div>
 		<caption>Table 4.2: Adding improvements to the NER algorithm.</caption>
-		<br/>
-		<btn class="copy" id="code2-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code2-copy");
-				var code = document.getElementById("code2");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>On line 8, I have added a condition to check for sentence initial tokens, so that words that occur in the same relative position as "Very" are excluded. On line 12-14 I have added backtracking to find the beginning of it once an entity has been recognized (now "March" and "Hare" will be included in the results as "March Hare"). On lines 16-20 I have added code to look through the entities to find those that span the same preceding token and replace it with a span (a starting index and ending index) that covers the larger entity. Compare for example "Hare" and "March Hare" &ndash; the former spans only one token while the latter spans two.</p>
@@ -206,17 +184,6 @@ for i, j in find_named_entities(tokens):
 		</pre>
 		</div>
 		<caption>Table 4.2: Adding support for the use of "of" to the NER algorithm.</caption>
-		<br/>
-		<btn class="copy" id="code3-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code3-copy");
-				var code = document.getElementById("code3");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>Below are the recognized entities (the output) from running the algorithm with the text above as input.</p>

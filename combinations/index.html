@@ -205,17 +205,6 @@ def combinations(combination, data, indices, n, i, callback):
 combinations([], ["A", "B", "C"], [0, 1, 2], 2, 0, print)
 		</div>
 		<caption>Table 4.1: Starting to write the base case for the combinations algorithm.</caption>
-		<br/>
-		<btn class="copy" id="code1-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code1-copy");
-				var code = document.getElementById("code1");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>From the previous examples in <a href="#examples">Section 3</a> one can tell that a loop is needed in order to pick successive elements from the list of indices. It was also possible to see that whenever a second or third element was picked, the algorithm should start not from 0, but from where the last number was picked. Third, whenever the algorithm was finished picking elements, they were put back together in the reverse order in which they were picked. As an example, if {0, 1, 2} was a combination, and there are no more elements to pick, 2 is put back first, followed by 1 and then last 0.</p>
@@ -244,17 +233,6 @@ combinations([], ["A", "B", "C", "D"], [0, 1, 2, 3], 3, 0, print)
 		</pre>
 		</div>
 		<caption>Table 4.2: Adding the last bits of code for the combinations algorithm.</caption>
-		<br/>
-		<btn class="copy" id="code2-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code2-copy");
-				var code = document.getElementById("code2");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 		<p>I made the code more Pythonic by turning the <i>combinations()</i> function into an iterator. Note that it may be wise to operate on a list or array of indices that each represent the elements in the data. In this case, the list of indices is changed during the time that the algorithm runs.</p>
@@ -283,17 +261,6 @@ for c in combinations(["A", "B", "C", "D"], 3): print(c)
 		</pre>
 		</div>
 		<caption>Table 4.3: Making the code more Pythonic by turning the function into an iterator.</caption>
-		<br/>
-		<btn class="copy" id="code3-copy">Copy code</btn>
-		<script>
-			(function() {
-				var copy = document.getElementById("code3-copy");
-				var code = document.getElementById("code3");
-				copy.addEventListener("click", function(e) {
-					navigator.clipboard.writeText(code.innerText);
-				});
-			})();
-		</script>
 		</figure>
 
 
