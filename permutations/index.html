@@ -76,6 +76,7 @@
 
         <ol>
         	<li><a href="#figure1">3.1: A machine creating the permutations of [0, 1, 2, 3]</a></li>
+        	<li><a href="#figure2">4.1: Graphs showing time complexity</a></li>
         </ol>
 
 	<p>List of tables</p>
@@ -96,8 +97,10 @@
         	<li><a href="#code1">4.1 Starting to write the code for the permutations algorithm</a></li>
         	<li><a href="#code2">4.2 Adding to the code for computing permutations</a></li>
         	<li><a href="#code3">4.3 Adding code to (completing) the permutations algorithm</a></li>
-		<li><a href="#code4">4.4 Additional functions used in the permutations algorithm</a></li>
-		<li><a href="#code6">4.5: Making the algorithm more user-friendly</a></li>
+            <li><a href="#code4">4.4 Additional functions used in the permutations algorithm</a></li>
+            <li><a href="#code6">4.5: Making the algorithm more user-friendly</a></li>
+            <li><a href="#code7">4.6: Tracking the number of comparisons made on average in <i>find_successor()</i></li>
+            <li><a href="#code8">4.7: Tracking the number of swaps made on average in <i>sort_from()</i></li>
         	<li><a href="#code5">5.1 A rewrite of the Python implementation in C</a></li>
         </ol>
 
@@ -361,7 +364,7 @@ if __name__ == "__main__":
 		<figure>
 		<div class="code-block">
 		<pre class="line-numbers"></pre>
-		<pre id="code6" class="code">
+		<pre id="code7" class="code">
 comparisons = 0
 runs = 0
 
@@ -381,7 +384,7 @@ def find_successor(arr, i):
     return i
         </pre>
         </div>
-        <caption>Tracking the number of comparisons made on average in <i>find_successor()</i>.</caption>
+        <caption>Table 4.6: Tracking the number of comparisons made on average in <i>find_successor()</i>.</caption>
         </figure>
 
         <p><i>sort_from()</i> also had tracking code added to it, see below (lines 4, 5 and 9).</p>
@@ -389,7 +392,7 @@ def find_successor(arr, i):
 		<figure>
 		<div class="code-block">
 		<pre class="line-numbers"></pre>
-		<pre id="code6" class="code">
+		<pre id="code8" class="code">
 swaps = 0
 runs = 0
 
@@ -404,14 +407,17 @@ def sort_from(arr, start):
         i -= 1
         </pre>
         </div>
-        <caption>Tracking the number of swaps made on average in <i>sort_from()</i>.</caption>
+        <caption>Table 4.7: Tracking the number of swaps made on average in <i>sort_from()</i>.</caption>
         </figure>
 
-        <p>I ran the algorithm with an input of increasing size, from 2 to 9 and tracked the average number of comparisons and swaps per call. From the results, I made a plot using <code>matploblib</code> in Python to see the shape of the lines. You can see that in practice, on average, the time complexity of <i>find_successor()</i> is linear, although with a large added constant. <i>sort_from()</i> on average does very few swaps. On the whole, the algorithm should therefore be <i>O(n x n!)</i>.</p>
+        <p>I ran the algorithm with an input of increasing size, from 2 to 9 and tracked the average number of comparisons and swaps per call. From the results, I made a plot using <code>matploblib</code> in Python to see the shape of the lines. From the first (left) figure, you can see that in practice, on average, the time complexity of <i>find_successor()</i> is linear, although with a large added constant. You can also see that <i>sort_from()</i> on average does very few swaps. From the second figure (right) the total number of comparisons and swaps have been counted, for a certain input size. The curve can be seen to be distinctly <i>n!</i>. The algorithm as a whole should, because of the behavior of <i>find_successor()</i>, therefore be <i>O(n x n!)</i>.</p>
         
         <center>
+        <figure id="figure2">
         <img src="./analysis.png" width="300px">
-        <img src="./analysis_2.png" width="500px">
+        <img src="./analysis_2.png" width="500px"><br/>
+        <caption>Figure 4.1: Graphs showing time complexity</caption>
+        <figure>
         </center>
 
 		<h2 id="arewriteinc">5. A re-write in C</h2>
