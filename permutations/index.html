@@ -54,6 +54,7 @@
 
 		<p>Timeline:</p>
 		<ul>
+			<li>2026-05-23: Added a time complexity analysis (see the end of <a href="#programmingasolution">Section 4</a>).</li>
 			<li>2026-03-12: First published.</li>
 		</ul>
 
@@ -355,6 +356,63 @@ if __name__ == "__main__":
 		<caption>Table 4.5: Making the algorithm more user-friendly.</caption>
 		</figure>
 
+        <p>A time-complexity analysis is useful. I investigated <i>find_successor()</i> and <i>sort_from()</i> for how many comparisons and swaps they made. For <i>find_successor()</i>, see the code below for how the comparisons were tracked (lines 4, 5 and 10.).</p>
+
+		<figure>
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code6" class="code">
+comparisons = 0
+runs = 0
+
+def find_successor(arr, i):
+    global comparisons, runs
+    runs += 1
+    j = 1
+    lim = max(arr) * 2
+    while True:
+        for k in range(0, len(arr)):
+            comparisons += 1
+            if arr[k] == arr[i]+j:
+                return k
+        j += 1
+        if j > lim:
+            break
+    return i
+        </pre>
+        </div>
+        <caption>Tracking the number of comparisons made on average in <i>find_successor()</i>.</caption>
+        </figure>
+
+        <p><i>sort_from()</i> also had tracking code added to it, see below (lines 4, 5 and 9).</p>
+
+		<figure>
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code6" class="code">
+swaps = 0
+runs = 0
+
+def sort_from(arr, start):
+    global swaps, runs
+    runs += 1
+    i = len(arr)-1
+    while i >= start:
+        m = max(arr[start:i+1])
+        swaps += 1
+        swap(arr, i, start+arr[start:i+1].index(m))
+        i -= 1
+        </pre>
+        </div>
+        <caption>Tracking the number of swaps made on average in <i>sort_from()</i>.</caption>
+        </figure>
+
+        <p>I ran the algorithm with an input of increasing size, from 2 to 9 and tracked the average number of comparisons and swaps per call. From the results, I made a plot using <code>matploblib</code> in Python to see the shape of the lines. You can see that in practice, on average, the time complexity of <i>find_successor()</i> is linear, although with a large added constant. <i>sort_from()</i> on average does very few swaps. On the whole, the algorithm should therefore be <i>O(n x n!)</i>.</p>
+        
+        <center>
+        <img src="./analysis.png" width="300px">
+        <img src="./analysis_2.png" width="500px">
+        </center>
 
 		<h2 id="arewriteinc">5. A re-write in C</h2>
 
