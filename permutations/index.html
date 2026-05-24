@@ -101,6 +101,7 @@
             <li><a href="#code6">4.5: Making the algorithm more user-friendly</a></li>
             <li><a href="#code7">4.6: Tracking the number of comparisons made on average in <i>find_successor()</i></li>
             <li><a href="#code8">4.7: Tracking the number of swaps made on average in <i>sort_from()</i></li>
+            <li><a href="#code9">4.8: The successor to <i>find_successor()</i> that operates in linear time</i></li>
         	<li><a href="#code5">5.1 A rewrite of the Python implementation in C</a></li>
         </ol>
 
@@ -410,15 +411,38 @@ def sort_from(arr, start):
         <caption>Table 4.7: Tracking the number of swaps made on average in <i>sort_from()</i>.</caption>
         </figure>
 
-        <p>I ran the algorithm with an input of increasing size, from 2 to 9 and tracked the average number of comparisons and swaps per call. From the results, I made a plot using <code>matploblib</code> in Python to see the shape of the lines. From the first (left) figure, you can see that in practice, on average, the time complexity of <i>find_successor()</i> is linear, although with a large added constant. You can also see that <i>sort_from()</i> on average does very few swaps. From the second figure (right) the total number of comparisons and swaps have been counted, for a certain input size. The curve can be seen to be distinctly <i>n!</i>. The algorithm as a whole should, because of the behavior of <i>find_successor()</i>, therefore be <i>O(n x n!)</i>.</p>
+        <p>I ran the algorithm with an input of increasing size, from 2 to 9 and tracked the average number of comparisons and swaps per call. From the results, I made a plot using <code>matploblib</code> in Python to see the shape of the lines. From the first (left) figure, you can see that in practice, on average, the time complexity of <i>find_successor()</i> is non-linear. You can also see that <i>sort_from()</i> on average does very few swaps. In the second figure (right) the total number of comparisons and swaps have been counted, for a certain input size. The swaps made by <i>sort_from()</i> increases just behind the comparisons made by <i>find_successor()</i>.</p>
         
+        <p>It's noteworthy that <i>find_successor()</i> makes more comparisons in the average function call the longer the input is. This is typical behavior of a function that is quadratic (or more) in time complexity. The other functions that operate in linear time show flat curves, which shows that the average number of operations does not increase with the length of the input.</p> 
+
+        <p>The algorithm as a whole should, because of the behavior of <i>find_successor()</i>, therefore be <i>O(n<sup>2</sup> x n!)</i>.</p>
+
         <center>
         <figure id="figure2">
-        <img src="./analysis.png" width="300px">
+        <img src="./analysis.png" width="500px">
         <img src="./analysis_2.png" width="500px"><br/>
         <caption>Figure 4.1: Graphs showing time complexity</caption>
         <figure>
         </center>
+
+        <p>I decided to make a faster version of <i>find_successor()</i> called <i>find_successor_fast()</i>. It works in strict linear time, as opposed to <i>find_successor()</i> which is <i>O(n<sup>2</sup>)</i>. The code can be seen below.
+
+		<figure>
+		<div class="code-block">
+		<pre class="line-numbers"></pre>
+		<pre id="code9" class="code">
+def find_successor_fast(arr, i):
+    min = arr.index(max(arr))
+    for k in range(i+1, len(arr)):
+        if arr[k] < arr[min] and arr[k] > arr[i]:
+            min = k
+    return min
+        </pre>
+        </div>
+        <caption>Table 4.8: The successor to <i>find_successor()</i> that operates in linear time.</caption>
+        </figure>
+
+        <p>This brings down the total time complexity to <i>O(n x n!)</i>.</p>
 
 		<h2 id="arewriteinc">5. A re-write in C</h2>
 
@@ -526,7 +550,9 @@ int main() {
 
 		<h2 id="inefficienesandadvantages">7. Inefficiencies and advantages</h2>
 
-		<p>The advantage with the method presented in this article is that the output is always in lexicographic order. Inefficiencies of this method are that (1) permutations that are valid are discarded (see the use of the <code>peek</code> operations), and (2) regarding the implementation, the longer the input becomes, the more important becomes the efficiency of the sorting algorithm used and the method for finding the successor.</p>
+		<p>The advantage with the method presented in this article is that the output is always in lexicographic order. Inefficiencies of this method are that (1) permutations that are valid are discarded (see the use of the <code>peek</code> operations), and (2) the time complexity experiment showed that <i>sort_from()</i> on average has little effect on the performance, while <i>find_successor()</i> makes a lot of comparisons.</p>
+
+        <p>The algorithm is likely slow compared to a clean C implementation of a fast algorithm like Donald Knuth's Algorithm L or <i>itertools.permutations()</i> (while <i>itertools.permutations()</i> is written in C, it has the overhead of generating Python objects).</p>
 
 		<h2 id="doyouhavequestions">8. Do you have questions about this writeup?</h2>
 
