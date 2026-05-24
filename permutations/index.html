@@ -442,7 +442,14 @@ def find_successor_fast(arr, i):
         <caption>Table 4.8: The successor to <i>find_successor()</i> that operates in linear time.</caption>
         </figure>
 
-        <p>This brings down the total time complexity to <i>O(n x n!)</i>.</p>
+        <p>This brings down the total time complexity to <i>O(n x n!)</i>. The difference in time complexity between the two functions shows clearly when timing the two variants of the algorithm. Below, a graph plots the time it takes to generate all <i>n</i> permutations. The first variant uses the <i>find_successor()</i> function that is <i>O(n<sup>2</sup>)</i>. The total time taken for <i>n=11</i> was 475.7 seconds. The second variant uses <i>find_successor_fast()</i> which is <i>O(n)</i>. The total time taken for <i>n=11</i> was 235.5 seconds. The faster implementation reduces the total runtime to about half.</p>
+
+        <center>
+        <figure id="figure3">
+        <img style="display:block;" src="./analysis_timing.png" width="500px">
+        <caption>Figure 4.2: Graph showing time-to-completion for two variants of the algorithm.</caption>
+        <figure>
+        </center>
 
 		<h2 id="arewriteinc">5. A re-write in C</h2>
 
